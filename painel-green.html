@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-tema="escuro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel Analista — Green</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐋</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="painel.css" />
+  <style>
+    .editor-section { margin-bottom: 32px; }
+    .editor-demanda-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 12px; overflow: hidden; }
+    .editor-demanda-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; cursor: pointer; gap: 12px; }
+    .editor-demanda-header:hover { background: var(--surface2); }
+    .editor-demanda-nome { font-size: 14px; font-weight: 600; color: var(--text); flex: 1; }
+    .editor-demanda-body { padding: 0 20px 20px; border-top: 1px solid var(--border); }
+    .editor-sub-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-top: 12px; }
+    .editor-sub-nome { font-size: 13px; font-weight: 600; color: var(--text2); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .editor-sub-nome span { flex: 1; }
+    .editor-textarea { width: 100%; min-height: 80px; padding: 10px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); font-size: 13px; color: var(--text); font-family: var(--mono); resize: vertical; outline: none; line-height: 1.6; margin-bottom: 10px; }
+    .editor-textarea:focus { border-color: var(--accent); }
+    .editor-input { width: 100%; padding: 8px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); font-size: 13px; color: var(--text); font-family: var(--sans); outline: none; margin-bottom: 8px; }
+    .editor-input:focus { border-color: var(--accent); }
+    .campos-lista { margin-bottom: 10px; }
+    .campo-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+    .campo-item input { flex: 1; padding: 6px 10px; background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius); font-size: 12px; color: var(--text2); font-family: var(--sans); outline: none; min-width: 100px; }
+    .campo-item input:focus { border-color: var(--accent); }
+    .campo-tipo { padding: 6px 10px; background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius); font-size: 12px; color: var(--text2); font-family: var(--sans); outline: none; cursor: pointer; }
+    .campo-tipo:focus { border-color: var(--accent); }
+    .btn-icon { padding: 5px 10px; border-radius: var(--radius); border: 1px solid var(--border2); background: transparent; font-size: 13px; color: var(--text3); cursor: pointer; font-family: var(--sans); transition: all 0.15s; white-space: nowrap; }
+    .btn-icon:hover { background: var(--surface2); color: var(--text); }
+    .btn-icon.danger { border-color: #7f1d1d; color: #f87171; }
+    .btn-icon.danger:hover { background: #450a0a; }
+    .btn-icon.success { border-color: var(--accent); color: var(--accent); }
+    .btn-icon.success:hover { background: var(--accent-bg); }
+    .btn-add-sub { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: var(--radius); border: 1px dashed var(--border2); background: transparent; font-size: 12px; color: var(--text3); cursor: pointer; font-family: var(--sans); transition: all 0.15s; margin-top: 12px; width: 100%; }
+    .btn-add-sub:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-add-demanda { display: flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: var(--radius-lg); border: 1px dashed var(--border2); background: transparent; font-size: 14px; color: var(--text3); cursor: pointer; font-family: var(--sans); transition: all 0.15s; width: 100%; margin-top: 4px; }
+    .btn-add-demanda:hover { border-color: var(--accent); color: var(--accent); }
+    .hint { font-size: 11px; color: var(--text3); margin-bottom: 6px; font-family: var(--mono); }
+    .campos-label { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 8px; margin-top: 12px; }
+    .saving-toast { position: fixed; bottom: 24px; right: 24px; background: var(--accent); color: #fff; padding: 10px 18px; border-radius: var(--radius); font-size: 13px; font-weight: 500; font-family: var(--sans); opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 999; }
+    .saving-toast.show { opacity: 1; }
+    .atendentes-editor { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .atendente-tag { display: flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; background: var(--surface2); border: 1px solid var(--border2); font-size: 13px; color: var(--text2); }
+    .atendente-tag button { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 12px; padding: 0; line-height: 1; transition: color 0.15s; }
+    .atendente-tag button:hover { color: #f87171; }
+    .add-atendente-row { display: flex; gap: 8px; margin-top: 8px; }
+    .add-atendente-row input { flex: 1; padding: 8px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); font-size: 13px; color: var(--text); font-family: var(--sans); outline: none; }
+    .add-atendente-row input:focus { border-color: var(--accent); }
+    .partes-hint { background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 10px; font-size: 11px; color: var(--text3); font-family: var(--mono); line-height: 1.7; }
+    .partes-hint b { color: var(--accent2); }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="tela-login">
+  <div class="login-card">
+    <div class="logo">
+      <div class="logo-mark" style="background:#10B981;">
+        <svg viewBox="0 0 16 16"><path d="M2 4h12M2 8h8M2 12h10" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <h1>Painel · Green</h1>
+    </div>
+    <p class="tagline">Acesso restrito — Setor Green</p>
+    <div class="field-group" style="margin-top:28px;">
+      <label class="field-label">Senha</label>
+      <input type="password" class="field-input" id="input-senha" placeholder="Digite a senha" onkeydown="if(event.key==='Enter') entrar()" />
+    </div>
+    <div id="erro-senha" class="erro-msg hidden">Senha incorreta.</div>
+    <button class="btn-gerar" style="margin-top:16px;" onclick="entrar()">Entrar</button>
+  </div>
+</div>
+
+<!-- PAINEL -->
+<div id="tela-painel" class="hidden">
+  <div class="painel-container">
+
+    <div class="painel-header">
+      <div class="logo">
+        <div class="logo-mark" style="background:#10B981;">
+          <svg viewBox="0 0 16 16"><path d="M2 4h12M2 8h8M2 12h10" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <h1>Painel · Green</h1>
+          <div class="relogio" id="relogio"></div>
+        </div>
+      </div>
+      <div class="painel-header-actions">
+        <button class="btn-tema" onclick="alternarTema()" id="btn-tema" title="Alternar tema">🌙</button>
+        <button class="btn-limpar" onclick="confirmarLimpar()">Limpar todos</button>
+        <button class="btn-exportar" onclick="exportarCSV()">Exportar CSV</button>
+        <button class="btn-sair" onclick="sair()">Sair</button>
+      </div>
+    </div>
+
+    <div class="abas-wrap">
+      <button class="aba active" id="aba-chamados" onclick="trocarAba('chamados')">Chamados</button>
+      <button class="aba" id="aba-dashboard" onclick="trocarAba('dashboard')">Dashboard</button>
+      <button class="aba" id="aba-editor" onclick="trocarAba('editor')">Editor de Scripts</button>
+    </div>
+
+    <!-- ABA CHAMADOS -->
+    <div id="tela-chamados">
+      <div class="busca-wrap">
+        <input type="text" class="busca-input" id="busca-input" placeholder="Buscar por ID do cliente, atendente ou demanda..." oninput="renderizarChamados()" />
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value" id="stat-total">0</div></div>
+        <div class="stat-card"><div class="stat-label">Hoje</div><div class="stat-value accent" id="stat-hoje">0</div></div>
+        <div class="stat-card"><div class="stat-label">Esta semana</div><div class="stat-value" id="stat-semana">0</div></div>
+        <div class="stat-card"><div class="stat-label">Este mês</div><div class="stat-value" id="stat-mes">0</div></div>
+      </div>
+      <div class="colaboradores-wrap" id="colaboradores-wrap" style="margin-bottom:12px;">
+        <div id="lista-colaboradores" class="colaboradores-list"></div>
+      </div>
+      <div class="filtros-row">
+        <div class="chip-group">
+          <button class="chip-data active" onclick="filtrarData('todos', this)">Todos</button>
+          <button class="chip-data" onclick="filtrarData('hoje', this)">Hoje</button>
+          <button class="chip-data" onclick="filtrarData('semana', this)">Esta semana</button>
+          <button class="chip-data" onclick="filtrarData('mes', this)">Este mês</button>
+        </div>
+        <select class="select-ordem" onchange="ordenar(this.value)">
+          <option value="data_desc">Mais recentes</option>
+          <option value="data_asc">Mais antigos</option>
+          <option value="atendente">Atendente A-Z</option>
+        </select>
+      </div>
+      <div id="contador" class="contador"></div>
+      <div id="lista-chamados"></div>
+      <div id="vazio" class="vazio hidden"><p>Nenhum chamado encontrado.</p></div>
+    </div>
+
+    <!-- ABA DASHBOARD -->
+    <div id="tela-dashboard" class="hidden">
+      <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:24px;">
+        <button class="chip-data active" onclick="filtrarPeriodoDash('mes', this)">Este mês</button>
+        <button class="chip-data" onclick="filtrarPeriodoDash('ano', this)">Este ano</button>
+        <button class="chip-data" onclick="filtrarPeriodoDash('personalizado', this)">Personalizado</button>
+        <div id="filtro-personalizado" style="display:none; gap:8px; align-items:center; flex-wrap:wrap;">
+          <input type="date" id="data-inicio" style="padding:6px 10px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); color:var(--text); font-family:var(--sans); font-size:12px; outline:none;" onchange="renderizarDashboard()" />
+          <span style="color:var(--text3); font-size:12px;">até</span>
+          <input type="date" id="data-fim" style="padding:6px 10px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); color:var(--text); font-family:var(--sans); font-size:12px; outline:none;" onchange="renderizarDashboard()" />
+        </div>
+      </div>
+      <div class="dash-grid">
+        <div class="dash-card dash-wide">
+          <div class="dash-card-title">Chamados por atendente</div>
+          <div class="dash-chart-wrap"><canvas id="grafico-atendente"></canvas></div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-title">Demandas mais abertas</div>
+          <div class="dash-chart-wrap"><canvas id="grafico-demanda"></canvas></div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-title">Ranking de atendentes</div>
+          <div id="ranking-lista" class="ranking-lista"></div>
+        </div>
+<div class="dash-card dash-wide">
+          <div class="dash-card-title">Chamados por dia — por colaborador</div>
+          <div class="dash-chart-wrap"><canvas id="grafico-linha"></canvas></div>
+        </div>
+      </div>
+    </div>
+        
+    <!-- ABA EDITOR -->
+    <div id="tela-editor" class="hidden">
+      <div class="dash-card" style="margin-bottom:24px;">
+        <div class="dash-card-title">Atendentes do Setor</div>
+        <div id="atendentes-lista" class="atendentes-editor"></div>
+        <div class="add-atendente-row">
+          <input type="text" id="novo-atendente-input" placeholder="Nome do novo atendente" onkeydown="if(event.key==='Enter') adicionarAtendente()" />
+          <button class="btn-icon success" onclick="adicionarAtendente()">+ Adicionar</button>
+        </div>
+      </div>
+      <div class="editor-section">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+          <p class="step-label" style="margin:0;">Scripts de Chamados</p>
+        </div>
+        <div id="editor-demandas-lista"></div>
+        <button class="btn-add-demanda" onclick="adicionarDemanda()">+ Nova demanda</button>
+      </div>
+    </div>
+
+    <div style="text-align:center; padding: 40px 0 20px; font-size:11px; color: var(--text3); opacity:0.4;">
+      feito por: Agnes Angelim
+    </div>
+  </div>
+</div>
+
+<!-- MODAL OBS -->
+<div id="modal-obs" class="modal-overlay hidden">
+  <div class="modal-card">
+    <div class="modal-header">
+      <span class="modal-titulo">Adicionar observação</span>
+      <button class="modal-fechar" onclick="fecharModal()">✕</button>
+    </div>
+    <textarea class="modal-textarea" id="modal-texto" placeholder="Digite sua observação..."></textarea>
+    <div class="modal-actions">
+      <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+      <button class="btn-gerar" onclick="salvarObservacao()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div class="saving-toast" id="saving-toast">✓ Salvo</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBlbavbldOZuw3_lerPFzP0TDHK9K5Sqeg",
+    authDomain: "chamados-7e9e0.firebaseapp.com",
+    projectId: "chamados-7e9e0",
+    storageBucket: "chamados-7e9e0.firebasestorage.app",
+    messagingSenderId: "1018655787755",
+    appId: "1:1018655787755:web:8835ed2dcc6460279b0cae"
+  };
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const SETOR = 'green';
+const SENHA = 'green2025';
+
+let chamados = [];
+let scriptsData = { atendentes: [], demandas: [] };
+let filtroAtendente = null;
+let filtroData = 'todos';
+let ordemAtual = 'data_desc';
+let modalChamadoId = null;
+let grafAtendente = null, grafDemanda = null, grafLinha = null;
+let periodoDash = 'mes';
+const cardsAbertos = new Set();
+
+function entrar() {
+  const senha = document.getElementById('input-senha').value;
+  if (senha === SENHA) {
+    document.getElementById('tela-login').classList.add('hidden');
+    document.getElementById('tela-painel').classList.remove('hidden');
+    iniciarRelogio(); iniciarPainel(); carregarScripts();
+  } else {
+    document.getElementById('erro-senha').classList.remove('hidden');
+    document.getElementById('input-senha').value = '';
+    document.getElementById('input-senha').focus();
+  }
+}
+function sair() { location.reload(); }
+
+function iniciarRelogio() {
+  const atualizar = () => { const el = document.getElementById('relogio'); if (el) el.textContent = new Date().toLocaleString('pt-BR'); };
+  atualizar(); setInterval(atualizar, 1000);
+}
+function alternarTema() {
+  const html = document.documentElement, btn = document.getElementById('btn-tema');
+  const escuro = html.getAttribute('data-tema') === 'escuro';
+  html.setAttribute('data-tema', escuro ? 'claro' : 'escuro');
+  btn.textContent = escuro ? '🌑' : '🌙';
+  const v = escuro
+    ? { bg:'#f8fafc', surface:'#ffffff', surface2:'#f1f5f9', border:'#e2e8f0', border2:'#cbd5e1', text:'#0f172a', text2:'#334155', text3:'#64748b' }
+    : { bg:'#020617', surface:'#1E293B', surface2:'#334155', border:'#334155', border2:'#475569', text:'#FFFFFF', text2:'#CBD5E1', text3:'#94A3B8' };
+  Object.entries(v).forEach(([k, val]) => document.documentElement.style.setProperty(`--${k}`, val));
+  document.body.style.background = v.bg; document.body.style.color = v.text;
+}
+
+function trocarAba(aba) {
+  ['chamados','dashboard','editor'].forEach(a => {
+    document.getElementById('tela-'+a).classList.toggle('hidden', a !== aba);
+    document.getElementById('aba-'+a).classList.toggle('active', a === aba);
+  });
+  if (aba === 'dashboard') renderizarDashboard();
+  if (aba === 'editor') renderizarEditor();
+}
+
+function iniciarPainel() {
+  db.collection('chamados').orderBy('data','desc').onSnapshot(snapshot => {
+    chamados = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    atualizarStats(); renderizarAtendentes(); renderizarChamados();
+  });
+}
+
+function uid() { return Math.random().toString(36).slice(2, 9); }
+
+function carregarScripts() {
+  db.collection('scripts').doc(SETOR).onSnapshot(doc => {
+    if (doc.exists) {
+      scriptsData = doc.data();
+    } else {
+      scriptsData = {
+        atendentes: ["Kamilla", "Guilherme"],
+        demandas: [
+          { id: uid(), nome: "Ajuste de aplicativo", subs: [{ id: uid(), sub: "Acesso ao aplicativo", texto: "O licenciado está enfrentando problema de acesso ou visualização incorreta no aplicativo. As informações exibidas não correspondem ao que está registrado no sistema.", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }] }]},
+          { id: uid(), nome: "Ajuste de comissão", subs: [{ id: uid(), sub: "Divergência de comissão", texto: "O licenciado identificou divergência no valor de comissão registrado. O valor exibido no painel não está de acordo com o esperado conforme as vendas realizadas no período.", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }] }]},
+          { id: uid(), nome: "Ajuste de KWh", subs: [{ id: uid(), sub: "Consumo de KWh", texto: "O cliente apresenta inconsistência no consumo de KWh registrado no sistema. O valor informado na fatura não corresponde ao consumo real aferido no período.", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }] }]},
+        ]
+      };
+      salvarScripts();
+    }
+    renderizarEditor();
+  });
+}
+
+function salvarScripts() {
+  db.collection('scripts').doc(SETOR).set(scriptsData).then(() => toast('Salvo'));
+}
+function toast(msg) {
+  const el = document.getElementById('saving-toast');
+  el.textContent = '✓ ' + msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+function renderizarAtendentesEditor() {
+  const lista = document.getElementById('atendentes-lista'); if (!lista) return;
+  lista.innerHTML = '';
+  (scriptsData.atendentes || []).forEach((nome, i) => {
+    const tag = document.createElement('div');
+    tag.className = 'atendente-tag';
+    tag.innerHTML = `<span>${esc(nome)}</span><button onclick="removerAtendente(${i})" title="Remover">✕</button>`;
+    lista.appendChild(tag);
+  });
+}
+function adicionarAtendente() {
+  const input = document.getElementById('novo-atendente-input');
+  const nome = input.value.trim(); if (!nome) return;
+  if (!scriptsData.atendentes) scriptsData.atendentes = [];
+  scriptsData.atendentes.push(nome); input.value = ''; salvarScripts();
+}
+function removerAtendente(i) {
+  if (!confirm('Remover atendente?')) return;
+  scriptsData.atendentes.splice(i, 1); salvarScripts();
+}
+
+function renderizarEditor() {
+  renderizarAtendentesEditor();
+  const lista = document.getElementById('editor-demandas-lista'); if (!lista) return;
+  lista.innerHTML = '';
+  (scriptsData.demandas || []).forEach((demanda) => {
+    const card = document.createElement('div');
+    card.className = 'editor-demanda-card';
+    card.id = 'demanda-card-' + demanda.id;
+    let subsHTML = '';
+    (demanda.subs || []).forEach((sub) => {
+      const camposHTML = (sub.campos || []).map((c) => `
+        <div class="campo-item">
+          <input type="text" value="${esc(c.label)}" placeholder="Label do campo" onchange="editarCampo('${demanda.id}','${sub.id}','${c.id}','label',this.value)" />
+          <select class="campo-tipo" onchange="editarCampo('${demanda.id}','${sub.id}','${c.id}','obrigatorio',this.value==='true')">
+            <option value="true" ${c.obrigatorio ? 'selected' : ''}>Obrigatório</option>
+            <option value="false" ${!c.obrigatorio ? 'selected' : ''}>Opcional</option>
+          </select>
+          <button class="btn-icon danger" onclick="removerCampo('${demanda.id}','${sub.id}','${c.id}')">✕</button>
+        </div>`).join('');
+      subsHTML += `
+        <div class="editor-sub-card" id="sub-card-${sub.id}">
+          <div class="editor-sub-nome">
+            <input class="editor-input" style="font-weight:600;font-size:13px;margin:0;" value="${esc(sub.sub)}" placeholder="Nome do subtipo" onchange="editarSub('${demanda.id}','${sub.id}','sub',this.value)" />
+            <button class="btn-icon danger" onclick="removerSub('${demanda.id}','${sub.id}')">Remover subtipo</button>
+          </div>
+          <div class="partes-hint">
+            <b>Dica:</b> Use <b>[[campo_inline]]</b> no texto para criar campos preenchíveis inline.<br>
+            Ex: "O cliente tem portabilidade <b>[[status]]</b> e no app está <b>[[app_status]]</b>"
+          </div>
+          <p class="hint">Texto do chamado:</p>
+          <textarea class="editor-textarea" placeholder="Texto do script..." onchange="editarSub('${demanda.id}','${sub.id}','texto',this.value)">${esc(sub.texto || '')}</textarea>
+          <div class="campos-label">Campos adicionais</div>
+          <div class="campos-lista" id="campos-${sub.id}">${camposHTML}</div>
+          <button class="btn-add-sub" onclick="adicionarCampo('${demanda.id}','${sub.id}')">+ Adicionar campo</button>
+        </div>`;
+    });
+    card.innerHTML = `
+      <div class="editor-demanda-header" onclick="toggleEditorCard('${demanda.id}')">
+        <div class="editor-demanda-nome">
+          <input class="editor-input" style="background:transparent;border:none;font-weight:600;font-size:14px;padding:0;cursor:text;"
+            value="${esc(demanda.nome)}" placeholder="Nome da demanda" 
+            onclick="event.stopPropagation()"
+            onchange="editarDemanda('${demanda.id}','nome',this.value)" />
+        </div>
+        <select class="campo-tipo" style="font-size:11px;padding:3px 8px;" onclick="event.stopPropagation()" onchange="editarDemanda('${demanda.id}','tipo',this.value)">
+            <option value="ticket" ${!demanda.tipo || demanda.tipo==='ticket' ? 'selected' : ''}>Ticket</option>
+            <option value="clickup" ${demanda.tipo==='clickup' ? 'selected' : ''}>ClickUp</option>
+          </select>
+        <button class="btn-icon danger" onclick="event.stopPropagation(); removerDemanda('${demanda.id}')">Remover</button>
+        <span style="color:var(--text3); font-size:12px;" id="seta-ed-${demanda.id}">▸</span>
+      </div>
+      <div class="editor-demanda-body hidden" id="body-ed-${demanda.id}">
+        ${subsHTML}
+        <button class="btn-add-sub" onclick="adicionarSub('${demanda.id}')">+ Novo subtipo</button>
+      </div>`;
+    lista.appendChild(card);
+  });
+
+  cardsAbertos.forEach(id => {
+    const body = document.getElementById('body-ed-' + id);
+    const seta = document.getElementById('seta-ed-' + id);
+    if (body) { body.classList.remove('hidden'); seta.textContent = '▾'; }
+  });
+}
+
+function toggleEditorCard(id) {
+  const body = document.getElementById('body-ed-' + id);
+  const seta = document.getElementById('seta-ed-' + id);
+  const hidden = body.classList.toggle('hidden');
+  seta.textContent = hidden ? '▸' : '▾';
+  if (hidden) cardsAbertos.delete(id);
+  else cardsAbertos.add(id);
+}
+
+function adicionarDemanda() {
+  if (!scriptsData.demandas) scriptsData.demandas = [];
+  scriptsData.demandas.push({ id: uid(), nome: '', tipo: 'ticket', subs: [{ id: uid(), sub: 'Novo subtipo', texto: '', campos: [{ id: uid(), label: 'ID cliente', obrigatorio: true }, { id: uid(), label: 'ID licenciado', obrigatorio: true }] }] });
+  salvarScripts();
+}
+function removerDemanda(did) {
+  if (!confirm('Remover esta demanda e todos os seus subtipos?')) return;
+  scriptsData.demandas = scriptsData.demandas.filter(d => d.id !== did); salvarScripts();
+}
+function editarDemanda(did, campo, valor) {
+  const d = scriptsData.demandas.find(d => d.id === did);
+  if (d) { d[campo] = valor; salvarScripts(); }
+}
+function adicionarSub(did) {
+  const d = scriptsData.demandas.find(d => d.id === did);
+  if (d) { d.subs.push({ id: uid(), sub: 'Novo subtipo', texto: '', campos: [{ id: uid(), label: 'ID cliente', obrigatorio: true }, { id: uid(), label: 'ID licenciado', obrigatorio: true }] }); salvarScripts(); }
+}
+function removerSub(did, sid) {
+  if (!confirm('Remover este subtipo?')) return;
+  const d = scriptsData.demandas.find(d => d.id === did);
+  if (d) { d.subs = d.subs.filter(s => s.id !== sid); salvarScripts(); }
+}
+function editarSub(did, sid, campo, valor) {
+  const d = scriptsData.demandas.find(d => d.id === did);
+  if (d) { const s = d.subs.find(s => s.id === sid); if (s) { s[campo] = valor; salvarScripts(); } }
+}
+function adicionarCampo(did, sid) {
+  const d = scriptsData.demandas.find(d => d.id === did);
+  if (d) { const s = d.subs.find(s => s.id === sid); if (s) { if (!s.campos) s.campos = []; s.campos.push({ id: uid(), label: 'Novo campo', obrigatorio: false }); salvarScripts(); } }
+}
+function removerCampo(did, sid, cid) {
+  const d = scriptsData.demandas.find(d => d.id === did);
+  if (d) { const s = d.subs.find(s => s.id === sid); if (s) { s.campos = s.campos.filter(c => c.id !== cid); salvarScripts(); } }
+}
+function editarCampo(did, sid, cid, campo, valor) {
+  const d = scriptsData.demandas.find(d => d.id === did);
+  if (d) { const s = d.subs.find(s => s.id === sid); if (s) { const c = s.campos.find(c => c.id === cid); if (c) { c[campo] = valor; salvarScripts(); } } }
+}
+
+function atualizarStats() {
+  const hoje = new Date(), dHoje = hoje.toLocaleDateString('pt-BR');
+  const inicioSemana = new Date(hoje); inicioSemana.setDate(hoje.getDate() - hoje.getDay());
+  const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+  const parsarData = str => { if (!str) return null; const [date,time] = str.split(', '); const [d,m,y] = date.split('/'); return new Date(`${y}-${m}-${d}T${time||'00:00:00'}`); };
+  const filtrados = chamados.filter(c => c.setor === SETOR);
+  document.getElementById('stat-total').textContent  = filtrados.length;
+  document.getElementById('stat-hoje').textContent   = filtrados.filter(c => c.data && c.data.startsWith(dHoje)).length;
+  document.getElementById('stat-semana').textContent = filtrados.filter(c => { const d=parsarData(c.data); return d&&d>=inicioSemana; }).length;
+  document.getElementById('stat-mes').textContent    = filtrados.filter(c => { const d=parsarData(c.data); return d&&d>=inicioMes; }).length;
+}
+
+function tempoRelativo(str) {
+  if (!str) return '';
+  const [date,time] = str.split(', '); const [d,m,y] = date.split('/');
+  const data = new Date(`${y}-${m}-${d}T${time||'00:00:00'}`);
+  const diff = Math.floor((new Date()-data)/1000);
+  if (diff<60) return 'agora mesmo';
+  if (diff<3600) return `há ${Math.floor(diff/60)} min`;
+  if (diff<86400) return `há ${Math.floor(diff/3600)} h`;
+  if (diff<604800) return `há ${Math.floor(diff/86400)} dia${Math.floor(diff/86400)>1?'s':''}`;
+  return str;
+}
+
+function renderizarAtendentes() {
+  const lista = document.getElementById('lista-colaboradores'); if (!lista) return;
+  lista.innerHTML = '';
+  const base = chamados.filter(c=>c.setor===SETOR);
+  [...new Set(base.map(c=>c.atendente))].forEach(nome => {
+    const qtd = base.filter(c=>c.atendente===nome).length;
+    const btn = document.createElement('button');
+    btn.className = filtroAtendente===nome ? 'chip active' : 'chip';
+    btn.textContent = `${nome} (${qtd})`;
+    btn.onclick = () => { filtroAtendente = filtroAtendente===nome ? null : nome; renderizarChamados(); renderizarAtendentes(); };
+    lista.appendChild(btn);
+  });
+}
+
+function filtrarData(periodo, btn) {
+  filtroData = periodo;
+  document.querySelectorAll('.chip-data').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+  renderizarChamados();
+}
+function ordenar(valor) { ordemAtual = valor; renderizarChamados(); }
+
+function renderizarChamados() {
+  const lista = document.getElementById('lista-chamados'), vazio = document.getElementById('vazio'), contador = document.getElementById('contador');
+  if (!lista) return;
+  const hoje = new Date(), dHoje = hoje.toLocaleDateString('pt-BR');
+  const inicioSemana = new Date(hoje); inicioSemana.setDate(hoje.getDate()-hoje.getDay());
+  const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+  const parsarData = str => { if (!str) return null; const [date,time]=str.split(', '); const [d,m,y]=date.split('/'); return new Date(`${y}-${m}-${d}T${time||'00:00:00'}`); };
+  const busca = (document.getElementById('busca-input')?.value||'').toLowerCase().trim();
+  let filtrados = chamados.filter(c => c.setor === SETOR);
+  if (filtroAtendente) filtrados = filtrados.filter(c=>c.atendente===filtroAtendente);
+  if (filtroData==='hoje')   filtrados = filtrados.filter(c=>c.data&&c.data.startsWith(dHoje));
+  if (filtroData==='semana') filtrados = filtrados.filter(c=>{const d=parsarData(c.data);return d&&d>=inicioSemana;});
+  if (filtroData==='mes')    filtrados = filtrados.filter(c=>{const d=parsarData(c.data);return d&&d>=inicioMes;});
+  if (busca) filtrados = filtrados.filter(c=>(c.atendente||'').toLowerCase().includes(busca)||(c.demanda||'').toLowerCase().includes(busca)||(c.texto||'').toLowerCase().includes(busca));
+  filtrados.sort((a,b) => {
+    if (ordemAtual==='data_desc') return (parsarData(b.data)||0)-(parsarData(a.data)||0);
+    if (ordemAtual==='data_asc')  return (parsarData(a.data)||0)-(parsarData(b.data)||0);
+    if (ordemAtual==='atendente') return (a.atendente||'').localeCompare(b.atendente||'');
+    return 0;
+  });
+  contador.textContent = `${filtrados.length} chamado${filtrados.length!==1?'s':''}`;
+  lista.innerHTML = '';
+  if (!filtrados.length) { vazio.classList.remove('hidden'); return; }
+  vazio.classList.add('hidden');
+  filtrados.forEach(c => {
+    const div = document.createElement('div');
+    div.className = 'chamado-card';
+    div.innerHTML = `
+      <div class="chamado-top" onclick="toggleCard('${c.id}')" style="cursor:pointer;">
+        <div class="chamado-info">
+          <div class="chamado-titulo">
+            ${esc(c.demanda||'Chamado')}
+            <span class="badge-id">#${c.id.slice(-6)}</span>
+            <span class="badge-setor badge-${c.setor||'expansao'}">${c.setor||'expansao'}</span>
+          </div>
+          <div class="chamado-meta">
+            <span>${esc(c.atendente||'')}</span>
+            <span>·</span><span>${esc(c.subtipo||'')}</span>
+            <span>·</span><span>${tempoRelativo(c.data)}</span>
+          </div>
+        </div>
+        <span class="card-seta" id="seta-${c.id}">▸</span>
+      </div>
+      <div class="chamado-corpo hidden" id="corpo-${c.id}">
+        <pre class="chamado-texto">${esc(c.texto||'')}</pre>
+        ${c.observacao ? `<div class="chamado-obs"><div class="chamado-obs-label">Observação</div>${esc(c.observacao)}</div>` : ''}
+        <div class="chamado-actions">
+          <button class="btn-copiar-chamado" id="btn-copiar-${c.id}" onclick="copiarChamado('${c.id}')">Copiar texto</button>
+          <button class="btn-obs" onclick="abrirModal('${c.id}')">Observação</button>
+          <button class="btn-excluir" onclick="excluir('${c.id}')">Excluir</button>
+        </div>
+      </div>`;
+    lista.appendChild(div);
+  });
+}
+
+function toggleCard(id) {
+  const corpo = document.getElementById('corpo-'+id), seta = document.getElementById('seta-'+id);
+  const aberto = !corpo.classList.contains('hidden');
+  corpo.classList.toggle('hidden', aberto); seta.textContent = aberto ? '▸' : '▾';
+}
+
+function copiarChamado(id) {
+  const c = chamados.find(c=>c.id===id); if (!c) return;
+  const btn = document.getElementById('btn-copiar-'+id);
+  const done = () => { if(btn){btn.textContent='Copiado!';btn.style.borderColor='var(--accent)';btn.style.color='var(--accent)';setTimeout(()=>{btn.textContent='Copiar texto';btn.style.borderColor='';btn.style.color='';},2000);} };
+  if (navigator.clipboard&&window.isSecureContext) navigator.clipboard.writeText(c.texto).then(done);
+  else { const ta=document.createElement('textarea');ta.value=c.texto;ta.style.cssText='position:fixed;top:-9999px;left:-9999px;opacity:0;';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(ta); }
+}
+function abrirModal(id) { modalChamadoId=id; const c=chamados.find(c=>c.id===id); document.getElementById('modal-texto').value=c?.observacao||''; document.getElementById('modal-obs').classList.remove('hidden'); setTimeout(()=>document.getElementById('modal-texto').focus(),50); }
+function fecharModal() { document.getElementById('modal-obs').classList.add('hidden'); modalChamadoId=null; }
+function salvarObservacao() { const obs=document.getElementById('modal-texto').value.trim(); db.collection('chamados').doc(modalChamadoId).update({observacao:obs}); fecharModal(); }
+function excluir(id) { if(!confirm('Excluir este chamado?'))return; db.collection('chamados').doc(id).delete(); }
+function confirmarLimpar() { if(!confirm('Excluir TODOS os chamados do setor Green?'))return; const batch=db.batch(); chamados.filter(c=>c.setor===SETOR).forEach(c=>batch.delete(db.collection('chamados').doc(c.id))); batch.commit(); }
+document.addEventListener('DOMContentLoaded',()=>{ const m=document.getElementById('modal-obs'); if(m)m.addEventListener('click',e=>{if(e.target===m)fecharModal();}); });
+
+function exportarCSV() {
+  const dados = chamados.filter(c=>c.setor===SETOR);
+  if (!dados.length) { alert('Nenhum chamado para exportar.'); return; }
+  const cab = ['Data','Setor','Atendente','Demanda','Subtipo','Observação'];
+  const linhas = dados.map(c=>[c.data||'',c.setor||'',c.atendente||'',c.demanda||'',c.subtipo||'',c.observacao||''].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(';'));
+  const csv = [cab.join(';'),...linhas].join('\n');
+  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`chamados_green_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.csv`; a.click();
+}
+
+function filtrarPeriodoDash(periodo, btn) {
+  periodoDash = periodo;
+  document.querySelectorAll('#tela-dashboard .chip-data').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const personalizado = document.getElementById('filtro-personalizado');
+  personalizado.style.display = periodo === 'personalizado' ? 'flex' : 'none';
+  if (periodo !== 'personalizado') renderizarDashboard();
+}
+
+function renderizarDashboard() {
+  const hoje = new Date();
+  const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+  const inicioAno = new Date(hoje.getFullYear(), 0, 1);
+  const parsarData = str => { if (!str) return null; const [date,time]=str.split(', '); const [d,m,y]=date.split('/'); return new Date(`${y}-${m}-${d}T${time||'00:00:00'}`); };
+
+  let dados = chamados.filter(c => c.setor === SETOR);
+  if (periodoDash === 'mes') dados = dados.filter(c => { const d=parsarData(c.data); return d&&d>=inicioMes; });
+  if (periodoDash === 'ano') dados = dados.filter(c => { const d=parsarData(c.data); return d&&d>=inicioAno; });
+  if (periodoDash === 'personalizado') {
+    const ini = document.getElementById('data-inicio')?.value;
+    const fim = document.getElementById('data-fim')?.value;
+    if (ini) dados = dados.filter(c => { const d=parsarData(c.data); return d&&d>=new Date(ini); });
+    if (fim) dados = dados.filter(c => { const d=parsarData(c.data); return d&&d<=new Date(fim+'T23:59:59'); });
+  }
+
+  const cores = ['#10B981','#06B6D4','#F59E0B','#EF4444','#8B5CF6','#EC4899','#14B8A6','#F97316','#6366F1','#84CC16'];
+
+  const contagemAtendente = {};
+  dados.forEach(c => { contagemAtendente[c.atendente||'N/A'] = (contagemAtendente[c.atendente||'N/A']||0)+1; });
+  if (grafAtendente) grafAtendente.destroy();
+  grafAtendente = new Chart(document.getElementById('grafico-atendente'), {
+    type: 'bar',
+    data: { labels: Object.keys(contagemAtendente), datasets: [{ data: Object.values(contagemAtendente), backgroundColor: cores, borderRadius: 6 }] },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales: { x:{ticks:{color:'#94A3B8'},grid:{display:false}}, y:{ticks:{color:'#94A3B8',stepSize:1},grid:{color:'#1e293b'},beginAtZero:true} } }
+  });
+
+  const contagemDemanda = {};
+  dados.forEach(c => { contagemDemanda[c.demanda||'N/A'] = (contagemDemanda[c.demanda||'N/A']||0)+1; });
+  const contagemDemandaOrdenado = Object.fromEntries(Object.entries(contagemDemanda).sort((a,b) => b[1]-a[1]));
+  if (grafDemanda) grafDemanda.destroy();
+  grafDemanda = new Chart(document.getElementById('grafico-demanda'), {
+    type: 'bar',
+    data: { labels: Object.keys(contagemDemandaOrdenado), datasets: [{ data: Object.values(contagemDemandaOrdenado), backgroundColor: cores, borderColor: '#020617' }] },
+    options: { indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:'#94A3B8',stepSize:1},grid:{color:'#1e293b'},beginAtZero:true}, y:{ticks:{color:'#94A3B8',font:{size:11}},grid:{display:false}} } }
+  });
+
+  const ranking = document.getElementById('ranking-lista'); ranking.innerHTML = '';
+  const sorted = Object.entries(contagemAtendente).sort((a,b)=>b[1]-a[1]); const max = sorted[0]?.[1]||1;
+  sorted.forEach(([nome,qtd],i) => { ranking.innerHTML += `<div class="ranking-item"><div class="ranking-pos">${i+1}</div><div class="ranking-info"><div class="ranking-nome">${esc(nome)}</div><div class="ranking-bar-wrap"><div class="ranking-bar" style="width:${Math.round(qtd/max*100)}%"></div></div></div><div class="ranking-qtd">${qtd}</div></div>`; });
+
+  const diasMap = {};
+  dados.forEach(c => { if (!c.data) return; const dia = c.data.split(', ')[0]; const at = c.atendente||'N/A'; if (!diasMap[dia]) diasMap[dia]={}; diasMap[dia][at]=(diasMap[dia][at]||0)+1; });
+  const diasOrdenados = Object.keys(diasMap).sort((a,b)=>{const[da,ma,ya]=a.split('/');const[db,mb,yb]=b.split('/');return new Date(`${ya}-${ma}-${da}`)-new Date(`${yb}-${mb}-${db}`);});
+  const atendentesLinha = [...new Set(dados.map(c=>c.atendente||'N/A'))];
+  if (grafLinha) grafLinha.destroy();
+  grafLinha = new Chart(document.getElementById('grafico-linha'), {
+    type: 'line',
+    data: { labels: diasOrdenados, datasets: atendentesLinha.map((nome,i)=>({ label:nome, data:diasOrdenados.map(dia=>diasMap[dia]?.[nome]||0), borderColor:cores[i%cores.length], backgroundColor:cores[i%cores.length]+'22', borderWidth:2, pointRadius:4, tension:0.3, fill:false })) },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom',labels:{color:'#94A3B8',font:{size:11},padding:12,boxWidth:12}}}, scales:{x:{ticks:{color:'#94A3B8',font:{size:10}},grid:{color:'#1e293b'}}, y:{ticks:{color:'#94A3B8',stepSize:1},grid:{color:'#1e293b'},beginAtZero:true}}, elements:{line:{tension:0.4},point:{radius:3,hoverRadius:6}} }
+  });
+}
+
+function esc(str) { return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+</script>
+</body>
+</html>

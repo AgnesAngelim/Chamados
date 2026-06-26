@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-tema="escuro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel do Analista</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐋</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="painel.css" />
+</head>
+<body>
+
+  <!-- LOGIN -->
+  <div id="tela-login">
+    <div class="login-card">
+      <div class="logo">
+        <div class="logo-mark">
+          <svg viewBox="0 0 16 16"><path d="M2 4h12M2 8h8M2 12h10" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <h1>Painel do Analista</h1>
+      </div>
+      <p class="tagline">Acesso restrito</p>
+      <div class="field-group" style="margin-top:28px;">
+        <label class="field-label">Senha</label>
+        <input type="password" class="field-input" id="input-senha" placeholder="Digite a senha" onkeydown="if(event.key==='Enter') entrar()" />
+      </div>
+      <div id="erro-senha" class="erro-msg hidden">Senha incorreta.</div>
+      <button class="btn-gerar" style="margin-top:16px;" onclick="entrar()">Entrar</button>
+    </div>
+  </div>
+
+  <!-- PAINEL -->
+  <div id="tela-painel" class="hidden">
+    <div class="painel-container">
+
+      <!-- HEADER -->
+      <div class="painel-header">
+        <div class="logo">
+          <div class="logo-mark">
+            <svg viewBox="0 0 16 16"><path d="M2 4h12M2 8h8M2 12h10" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div>
+            <h1>Painel do Analista</h1>
+            <div class="relogio" id="relogio"></div>
+          </div>
+        </div>
+        <div class="painel-header-actions">
+          <button class="btn-tema" onclick="alternarTema()" id="btn-tema" title="Alternar tema">🌙</button>
+          <button class="btn-limpar" onclick="confirmarLimpar()">Limpar todos</button>
+          <button class="btn-exportar" onclick="exportarCSV()">Exportar CSV</button>
+          <button class="btn-sair" onclick="sair()">Sair</button>
+        </div>
+      </div>
+
+      <!-- ABAS -->
+      <div class="abas-wrap">
+        <button class="aba active" id="aba-chamados" onclick="trocarAba('chamados')">Chamados</button>
+        <button class="aba" id="aba-dashboard" onclick="trocarAba('dashboard')">Dashboard</button>
+      </div>
+
+      <!-- ========== ABA CHAMADOS ========== -->
+      <div id="tela-chamados">
+
+        <!-- BUSCA -->
+        <div class="busca-wrap">
+          <input type="text" class="busca-input" id="busca-input" placeholder="Buscar por ID do cliente, atendente ou demanda..." oninput="renderizarChamados()" />
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Total</div>
+            <div class="stat-value" id="stat-total">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Hoje</div>
+            <div class="stat-value accent" id="stat-hoje">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Esta semana</div>
+            <div class="stat-value" id="stat-semana">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Este mês</div>
+            <div class="stat-value" id="stat-mes">0</div>
+          </div>
+        </div>
+
+        <!-- SETOR -->
+        <div class="filtros-row" style="margin-bottom:12px;">
+          <div class="chip-group">
+            <button class="chip active" onclick="filtrar('todos', this)">Todos</button>
+            <button class="chip" onclick="filtrar('green', this)">Green</button>
+            <button class="chip" onclick="filtrar('telecom', this)">Telecom</button>
+            <button class="chip" onclick="filtrar('expansao', this)">Expansão</button>
+          </div>
+        </div>
+
+        <!-- COLABORADORES -->
+        <div class="colaboradores-wrap" id="colaboradores-wrap" style="display:none; margin-bottom:12px;">
+          <div id="lista-colaboradores" class="colaboradores-list"></div>
+        </div>
+
+        <!-- DATA E ORDEM -->
+        <div class="filtros-row">
+          <div class="chip-group">
+            <button class="chip-data active" onclick="filtrarData('todos', this)">Todos</button>
+            <button class="chip-data" onclick="filtrarData('hoje', this)">Hoje</button>
+            <button class="chip-data" onclick="filtrarData('semana', this)">Esta semana</button>
+            <button class="chip-data" onclick="filtrarData('mes', this)">Este mês</button>
+          </div>
+          <select class="select-ordem" onchange="ordenar(this.value)">
+            <option value="data_desc">Mais recentes</option>
+            <option value="data_asc">Mais antigos</option>
+            <option value="atendente">Atendente A-Z</option>
+            <option value="setor">Setor A-Z</option>
+          </select>
+        </div>
+
+        <!-- CONTADOR -->
+        <div id="contador" class="contador"></div>
+
+        <!-- LISTA -->
+        <div id="lista-chamados"></div>
+
+        <!-- VAZIO -->
+        <div id="vazio" class="vazio hidden">
+          <p>Nenhum chamado encontrado.</p>
+        </div>
+
+      </div>
+
+      <!-- ========== ABA DASHBOARD ========== -->
+      <div id="tela-dashboard" class="hidden">
+
+        <!-- FILTRO PERÍODO E SETOR DASHBOARD -->
+        <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:24px;">
+          <div class="chip-group" id="filtro-setor-dash">
+            <button class="chip active" onclick="filtrarSetorDash('todos', this)">Todos</button>
+            <button class="chip" onclick="filtrarSetorDash('green', this)">Green</button>
+            <button class="chip" onclick="filtrarSetorDash('telecom', this)">Telecom</button>
+            <button class="chip" onclick="filtrarSetorDash('expansao', this)">Expansão</button>
+          </div>
+          <div class="chip-group" id="filtro-periodo-dash" style="display:none;">
+            <button class="chip-data active" onclick="filtrarDash('mes', this)">Este mês</button>
+            <button class="chip-data" onclick="filtrarDash('semana', this)">Esta semana</button>
+            <button class="chip-data" onclick="filtrarDash('todos', this)">Todos</button>
+          </div>
+        </div>
+        
+        <!-- GRÁFICOS -->
+        <div class="dash-grid">
+
+          <!-- Barras: chamados por atendente -->
+          <div class="dash-card dash-wide">
+            <div class="dash-card-title">Chamados por atendente</div>
+            <div class="dash-chart-wrap">
+              <canvas id="grafico-atendente"></canvas>
+            </div>
+          </div>
+
+          <!-- Pizza: demandas mais abertas -->
+          <div class="dash-card">
+            <div class="dash-card-title">Demandas mais abertas</div>
+            <div class="dash-chart-wrap">
+              <canvas id="grafico-demanda"></canvas>
+            </div>
+          </div>
+
+          <!-- Ranking -->
+          <div class="dash-card">
+            <div class="dash-card-title">Ranking de atendentes</div>
+            <div id="ranking-lista" class="ranking-lista"></div>
+          </div>
+
+          <!-- Linha: chamados por dia por colaborador -->
+          <div class="dash-card">
+            <div class="dash-card-title">Chamados por dia — por colaborador</div>
+            <div class="dash-chart-wrap" style="height:300px;">
+              <canvas id="grafico-linha"></canvas>
+            </div>
+          </div>
+
+  <!-- MODAL -->
+  <div id="modal-obs" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span class="modal-titulo">Adicionar observação</span>
+        <button class="modal-fechar" onclick="fecharModal()">✕</button>
+      </div>
+      <textarea class="modal-textarea" id="modal-texto" placeholder="Digite sua observação..."></textarea>
+      <div class="modal-actions">
+        <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+        <button class="btn-gerar" onclick="salvarObservacao()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FIREBASE -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBlbavbldOZuw3_lerPFzP0TDHK9K5Sqeg",
+      authDomain: "chamados-7e9e0.firebaseapp.com",
+      projectId: "chamados-7e9e0",
+      storageBucket: "chamados-7e9e0.firebasestorage.app",
+      messagingSenderId: "1018655787755",
+      appId: "1:1018655787755:web:8835ed2dcc6460279b0cae"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
+
+  <!-- CHART.JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+  <script src="painel.js"></script>
+</body>
+</html>

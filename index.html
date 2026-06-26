@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Script de Chamados</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐋</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="container">
+    
+    <!-- HEADER -->
+    <header>
+      <div class="logo">
+        <div class="logo-mark">
+          <svg viewBox="0 0 16 16">
+            <path d="M2 4h12M2 8h8M2 12h10" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h1>Script de Chamados</h1>
+      </div>
+      <p class="tagline">Selecione o tipo, o setor e preencha os dados.</p>
+    </header>
+
+    <!-- 01 TIPO -->
+    <div class="step-wrap" id="passo-tipo">
+      <p class="step-label">01 — Tipo</p>
+      <div class="chip-group">
+        <button class="chip" onclick="selecionarTipo('clickup', this)">ClickUp</button>
+        <button class="chip" onclick="selecionarTipo('ticket', this)">Ticket</button>
+      </div>
+    </div>
+
+    <!-- 02 SETOR -->
+    <div id="passo-setor" class="step-wrap hidden">
+      <p class="step-label">02 — Setor</p>
+      <div class="chip-group">
+        <button class="chip" onclick="selecionarSetor('green', this)">Green</button>
+        <button class="chip" onclick="selecionarSetor('telecom', this)">Telecom</button>
+        <button class="chip" onclick="selecionarSetor('expansao', this)">Expansão</button>
+      </div>
+    </div>
+
+    <!-- 03 ATENDENTE -->
+    <div id="passo-atendente" class="step-wrap hidden">
+      <p class="step-label">03 — Atendente</p>
+      <div class="chip-group" id="atendente-list"></div>
+    </div>
+
+    <!-- 04 DEMANDA -->
+    <div id="passo2" class="step-wrap hidden">
+      <p class="step-label">04 — Demanda</p>
+      <div class="demanda-grid" id="demanda-list"></div>
+    </div>
+
+    <!-- 05 SUBTIPO -->
+    <div id="passo3" class="step-wrap hidden">
+      <p class="step-label">05 — Subtipo</p>
+      <div class="sub-grid" id="sub-list"></div>
+    </div>
+
+    <!-- FORM -->
+    <div id="passo4" class="hidden">
+      <div class="divider"></div>
+      <div class="form-card">
+        <div class="form-titulo" id="titulo-box"></div>
+        <div class="form-subtitulo" id="subtitulo-box"></div>
+        <div class="modelo-box" id="modelo-wrap"></div>
+        <div id="campos-extras"></div>
+        <div class="fields-row"></div>
+      </div>
+      <button class="btn-gerar hidden" id="btn-gerar" onclick="gerarTexto()">Gerar chamado</button>
+    </div>
+
+    <!-- RESULTADO -->
+    <div class="output-card" id="output-box" style="display:none;">
+      <div class="output-header">
+        <span class="output-tag">Chamado gerado</span>
+        <button class="btn-copy" id="btn-copy" onclick="copiar()">Copiar texto</button>
+      </div>
+      <div class="output-text" id="output-text"></div>
+    </div>
+
+    <div style="text-align:center; padding: 40px 0 0; font-size:11px; color: var(--text3); opacity:0.4;">
+      feito por: Agnes Angelim
+    </div>
+
+  </div>
+
+  <!-- LINK PAINEL -->
+  <div style="text-align:center; padding: 20px 0 0; display:flex; flex-direction:column; align-items:center; gap:8px;">
+    <a href="painel-green.html" style="font-size:11px; color: var(--text3); text-decoration:none; opacity:0.4;">Analista Green</a>
+    <a href="painel-telecom.html" style="font-size:11px; color: var(--text3); text-decoration:none; opacity:0.4;">Analista Telecom</a>
+    <a href="painel-expansao.html" style="font-size:11px; color: var(--text3); text-decoration:none; opacity:0.4;">Analista Expansão</a>
+  </div>
+
+  <!-- FIREBASE -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
