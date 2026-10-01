@@ -20,7 +20,7 @@ let scriptsCarregados = {};
 
 const emails = {
   green: 'matheusurias@igreenenergy.com.br',
-  telecom: 'maycon.alef@igreenenergy.com.br',
+  telecom: 'anacarolina.araujo@igreenenergy.com.br',
   expansao: 'mateuskeveny@igreenenergy.com.br'
 };
 
