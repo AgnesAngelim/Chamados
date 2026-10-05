@@ -220,7 +220,7 @@ function renderizarChamados() {
   filtrados.forEach(chamado => {
     const card = document.createElement('div');
     card.className = 'chamado-card';
-    const nomeSetor = { green: 'Green', telecom: 'Telecom', expansao: 'Expansão' }[chamado.setor] || chamado.setor;
+    const nomeSetor = { telecom: 'Telecom' }[chamado.setor] || chamado.setor;
     const idCliente = extrairId(chamado.texto);
     const obsHtml = chamado.observacao
       ? `<div class="chamado-obs"><div class="chamado-obs-label">Observação</div>${esc(chamado.observacao)}</div>`
