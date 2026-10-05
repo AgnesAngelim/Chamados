@@ -17,7 +17,6 @@
     .editor-demanda-body { padding: 0 20px 20px; border-top: 1px solid var(--border); }
     .editor-sub-card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-top: 12px; }
     .editor-sub-nome { font-size: 13px; font-weight: 600; color: var(--text2); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-    .editor-sub-nome span { flex: 1; }
     .editor-textarea { width: 100%; min-height: 80px; padding: 10px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); font-size: 13px; color: var(--text); font-family: var(--mono); resize: vertical; outline: none; line-height: 1.6; margin-bottom: 10px; }
     .editor-textarea:focus { border-color: var(--accent); }
     .editor-input { width: 100%; padding: 8px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); font-size: 13px; color: var(--text); font-family: var(--sans); outline: none; margin-bottom: 8px; }
@@ -25,9 +24,7 @@
     .campos-lista { margin-bottom: 10px; }
     .campo-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
     .campo-item input { flex: 1; padding: 6px 10px; background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius); font-size: 12px; color: var(--text2); font-family: var(--sans); outline: none; min-width: 100px; }
-    .campo-item input:focus { border-color: var(--accent); }
     .campo-tipo { padding: 6px 10px; background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius); font-size: 12px; color: var(--text2); font-family: var(--sans); outline: none; cursor: pointer; }
-    .campo-tipo:focus { border-color: var(--accent); }
     .btn-icon { padding: 5px 10px; border-radius: var(--radius); border: 1px solid var(--border2); background: transparent; font-size: 13px; color: var(--text3); cursor: pointer; font-family: var(--sans); transition: all 0.15s; white-space: nowrap; }
     .btn-icon:hover { background: var(--surface2); color: var(--text); }
     .btn-icon.danger { border-color: #7f1d1d; color: #f87171; }
@@ -48,14 +45,12 @@
     .atendente-tag button:hover { color: #f87171; }
     .add-atendente-row { display: flex; gap: 8px; margin-top: 8px; }
     .add-atendente-row input { flex: 1; padding: 8px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); font-size: 13px; color: var(--text); font-family: var(--sans); outline: none; }
-    .add-atendente-row input:focus { border-color: var(--accent); }
     .partes-hint { background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 10px; font-size: 11px; color: var(--text3); font-family: var(--mono); line-height: 1.7; }
     .partes-hint b { color: var(--accent2); }
   </style>
 </head>
 <body>
 
-<!-- LOGIN -->
 <div id="tela-login">
   <div class="login-card">
     <div class="logo">
@@ -74,7 +69,6 @@
   </div>
 </div>
 
-<!-- PAINEL -->
 <div id="tela-painel" class="hidden">
   <div class="painel-container">
 
@@ -98,6 +92,8 @@
 
     <div class="abas-wrap">
       <button class="aba active" id="aba-chamados" onclick="trocarAba('chamados')">Chamados</button>
+      <button class="aba" id="aba-tickets" onclick="trocarAba('tickets')">Tickets</button>
+      <button class="aba" id="aba-hub" onclick="trocarAba('hub')">HUB</button>
       <button class="aba" id="aba-dashboard" onclick="trocarAba('dashboard')">Dashboard</button>
       <button class="aba" id="aba-editor" onclick="trocarAba('editor')">Editor de Scripts</button>
     </div>
@@ -105,7 +101,7 @@
     <!-- ABA CHAMADOS -->
     <div id="tela-chamados">
       <div class="busca-wrap">
-        <input type="text" class="busca-input" id="busca-input" placeholder="Buscar por ID do cliente, atendente ou demanda..." oninput="renderizarChamados()" />
+        <input type="text" class="busca-input" id="busca-chamados" placeholder="Buscar por atendente ou demanda..." oninput="renderizarChamados()" />
       </div>
       <div class="stats-grid">
         <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value" id="stat-total">0</div></div>
@@ -129,9 +125,73 @@
           <option value="atendente">Atendente A-Z</option>
         </select>
       </div>
-      <div id="contador" class="contador"></div>
+      <div id="contador-chamados" class="contador"></div>
       <div id="lista-chamados"></div>
-      <div id="vazio" class="vazio hidden"><p>Nenhum chamado encontrado.</p></div>
+      <div id="vazio-chamados" class="vazio hidden"><p>Nenhum chamado encontrado.</p></div>
+    </div>
+
+    <!-- ABA TICKETS -->
+    <div id="tela-tickets" class="hidden">
+      <div class="busca-wrap">
+        <input type="text" class="busca-input" id="busca-tickets" placeholder="Buscar por atendente ou demanda..." oninput="renderizarTickets()" />
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value" id="stat-total-ticket">0</div></div>
+        <div class="stat-card"><div class="stat-label">Hoje</div><div class="stat-value accent" id="stat-hoje-ticket">0</div></div>
+        <div class="stat-card"><div class="stat-label">Esta semana</div><div class="stat-value" id="stat-semana-ticket">0</div></div>
+        <div class="stat-card"><div class="stat-label">Este mês</div><div class="stat-value" id="stat-mes-ticket">0</div></div>
+      </div>
+      <div class="colaboradores-wrap" id="colaboradores-wrap-ticket" style="margin-bottom:12px;">
+        <div id="lista-colaboradores-ticket" class="colaboradores-list"></div>
+      </div>
+      <div class="filtros-row">
+        <div class="chip-group">
+          <button class="chip-data active" onclick="filtrarDataTicket('todos', this)">Todos</button>
+          <button class="chip-data" onclick="filtrarDataTicket('hoje', this)">Hoje</button>
+          <button class="chip-data" onclick="filtrarDataTicket('semana', this)">Esta semana</button>
+          <button class="chip-data" onclick="filtrarDataTicket('mes', this)">Este mês</button>
+        </div>
+        <select class="select-ordem" onchange="ordenarTicket(this.value)">
+          <option value="data_desc">Mais recentes</option>
+          <option value="data_asc">Mais antigos</option>
+          <option value="atendente">Atendente A-Z</option>
+        </select>
+      </div>
+      <div id="contador-tickets" class="contador"></div>
+      <div id="lista-tickets"></div>
+      <div id="vazio-tickets" class="vazio hidden"><p>Nenhum ticket encontrado.</p></div>
+    </div>
+
+    <!-- ABA HUB -->
+    <div id="tela-hub" class="hidden">
+      <div class="busca-wrap">
+        <input type="text" class="busca-input" id="busca-hub" placeholder="Buscar por atendente ou demanda..." oninput="renderizarHub()" />
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value" id="stat-total-hub">0</div></div>
+        <div class="stat-card"><div class="stat-label">Hoje</div><div class="stat-value accent" id="stat-hoje-hub">0</div></div>
+        <div class="stat-card"><div class="stat-label">Esta semana</div><div class="stat-value" id="stat-semana-hub">0</div></div>
+        <div class="stat-card"><div class="stat-label">Este mês</div><div class="stat-value" id="stat-mes-hub">0</div></div>
+      </div>
+      <div class="colaboradores-wrap" id="colaboradores-wrap-hub" style="margin-bottom:12px;">
+        <div id="lista-colaboradores-hub" class="colaboradores-list"></div>
+      </div>
+      <div class="filtros-row">
+        <div class="chip-group">
+          <button class="chip-data active" onclick="filtrarDataHub('todos', this)">Todos</button>
+          <button class="chip-data" onclick="filtrarDataHub('hoje', this)">Hoje</button>
+          <button class="chip-data" onclick="filtrarDataHub('semana', this)">Esta semana</button>
+          <button class="chip-data" onclick="filtrarDataHub('mes', this)">Este mês</button>
+        </div>
+        <select class="select-ordem" onchange="ordenarHub(this.value)">
+          <option value="data_desc">Mais recentes</option>
+          <option value="data_asc">Mais antigos</option>
+          <option value="atendente">Atendente A-Z</option>
+        </select>
+      </div>
+      <div id="contador-hub" class="contador"></div>
+      <div id="lista-hub"></div>
+      <div id="vazio-hub" class="vazio hidden"><p>Nenhum atendimento HUB encontrado.</p></div>
     </div>
 
     <!-- ABA DASHBOARD -->
@@ -159,13 +219,12 @@
           <div class="dash-card-title">Ranking de atendentes</div>
           <div id="ranking-lista" class="ranking-lista"></div>
         </div>
-         <div class="dash-card dash-wide">
+        <div class="dash-card dash-wide">
           <div class="dash-card-title">Chamados por dia — por colaborador</div>
           <div class="dash-chart-wrap"><canvas id="grafico-linha"></canvas></div>
         </div>
       </div>
     </div>
-
 
     <!-- ABA EDITOR -->
     <div id="tela-editor" class="hidden">
@@ -186,13 +245,10 @@
       </div>
     </div>
 
-    <div style="text-align:center; padding: 40px 0 20px; font-size:11px; color: var(--text3); opacity:0.4;">
-      feito por: Agnes Angelim
-    </div>
+    <div style="text-align:center; padding: 40px 0 20px; font-size:11px; color: var(--text3); opacity:0.4;">feito por: Agnes Angelim</div>
   </div>
 </div>
 
-<!-- MODAL OBS -->
 <div id="modal-obs" class="modal-overlay hidden">
   <div class="modal-card">
     <div class="modal-header">
@@ -233,6 +289,12 @@ let scriptsData = { atendentes: [], demandas: [] };
 let filtroAtendente = null;
 let filtroData = 'todos';
 let ordemAtual = 'data_desc';
+let filtroAtendendeTicket = null;
+let filtroDataTicket = 'todos';
+let ordemTicket = 'data_desc';
+let filtroAtendendeHub = null;
+let filtroDataHub = 'todos';
+let ordemHub = 'data_desc';
 let modalChamadoId = null;
 let grafAtendente = null, grafDemanda = null, grafLinha = null;
 let periodoDash = 'mes';
@@ -256,6 +318,7 @@ function iniciarRelogio() {
   const atualizar = () => { const el = document.getElementById('relogio'); if (el) el.textContent = new Date().toLocaleString('pt-BR'); };
   atualizar(); setInterval(atualizar, 1000);
 }
+
 function alternarTema() {
   const html = document.documentElement, btn = document.getElementById('btn-tema');
   const escuro = html.getAttribute('data-tema') === 'escuro';
@@ -269,7 +332,7 @@ function alternarTema() {
 }
 
 function trocarAba(aba) {
-  ['chamados','dashboard','editor'].forEach(a => {
+  ['chamados','tickets','hub','dashboard','editor'].forEach(a => {
     document.getElementById('tela-'+a).classList.toggle('hidden', a !== aba);
     document.getElementById('aba-'+a).classList.toggle('active', a === aba);
   });
@@ -281,221 +344,22 @@ function iniciarPainel() {
   db.collection('chamados').orderBy('data','desc').onSnapshot(snapshot => {
     chamados = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     atualizarStats(); renderizarAtendentes(); renderizarChamados();
+    atualizarStatsTicket(); renderizarAtendentesTicket(); renderizarTickets();
+    atualizarStatsHub(); renderizarAtendentesHub(); renderizarHub();
   });
 }
 
 function uid() { return Math.random().toString(36).slice(2, 9); }
 
-function carregarScripts() {
-  db.collection('scripts').doc(SETOR).onSnapshot(doc => {
-    if (doc.exists) {
-      scriptsData = doc.data();
-    } else {
-      scriptsData = {
-        atendentes: ["Ana Carolina", "Alana Campos", "Daniel Henrique", "Maria Julia", "Renan Gonçalves"],
-        demandas: [
-          { id: uid(), nome: "Ajuste de fatura", subs: [{ id: uid(), sub: "Data de último pagamento", texto: "O cliente realizou o pagamento da linha e no aplicativo está como vencido", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }] }]},
-          { id: uid(), nome: "Ajuste de portabilidade", subs: [{ id: uid(), sub: "Status da portabilidade", texto: "O cliente tem uma portabilidade [[status_aprovacao]] e no aplicativo está [[status_portabilidade]]", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }] }]},
-          { id: uid(), nome: "Ajuste de residual", subs: [
-            { id: uid(), sub: "Comissionamento", texto: "Cliente realizou o pagamento do plano mas o licenciado não recebeu o comissionamento referente ao cliente", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }] },
-            { id: uid(), sub: "Royalties", texto: "O licenciado bateu PRO no mês anterior mas não está recebendo Royalties do cliente", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }] },
-            { id: uid(), sub: "Bônus portabilidade turbinada", texto: "Licenciado alega não ter recebido o bônus da campanha de Portabilidade Turbinada referente ao cliente", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }] },
-          ]},
-          { id: uid(), nome: "Análise de KWh", subs: [
-            { id: uid(), sub: "KWh do licenciado", texto: "O cliente realizou o pagamento mas o licenciado alega que não está recebendo os KWh", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }] },
-            { id: uid(), sub: "Quantidade de KWh de portabilidade", texto: "O cliente tem uma portabilidade confirmada paga no cartão de crédito e no aplicativo do licenciado está [[kwh_app]] KWh", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }] },
-            { id: uid(), sub: "Quantidade de KWh de nova linha", texto: "O cliente tem uma nova linha paga no cartão de crédito e no aplicativo os KWh estão zerados", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }] },
-            { id: uid(), sub: "KWh de voucher", texto: "O cliente tem uma portabilidade por voucher e no aplicativo está [[kwh_voucher]] KWh", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }] },
-          ]},
-          { id: uid(), nome: "Correção app", subs: [
-            { id: uid(), sub: "Forma de pagamento", texto: "O cliente realizou o pagamento da linha via [[via_pagamento]] e no app está como [[app_pagamento]]", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }] },
-            { id: uid(), sub: "Data de último pagamento", texto: "No aplicativo do licenciado não aparece a data de último pagamento", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }] },
-            { id: uid(), sub: "Número de gigas", texto: "O cliente tem [[gigas_correto]] de gigas mas no aplicativo está aparecendo incorreto", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }] },
-            { id: uid(), sub: "Número de origem", texto: "O cliente fez uma alteração de número na Contel", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }] },
-          ]},
-          { id: uid(), nome: "Correção de cadastro", subs: [
-            { id: uid(), sub: "Data ativo", texto: "O cliente fez a ativação no dia [[data_ativacao]] e a data ativo está no dia [[data_ativo]]", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }] },
-            { id: uid(), sub: "Portabilidade para nova linha", texto: "O cliente tinha um cadastro de portabilidade mas deseja mudar para nova linha", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }] },
-            { id: uid(), sub: "Nova linha para portabilidade", texto: "O cliente tinha uma nova linha mas deseja mudar para portabilidade", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }] },
-            { id: uid(), sub: "Email do cliente", texto: "O cliente deseja alteração de email e não foi possível alterar pelo BackOffice", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }, { id: uid(), label: "Email correto", obrigatorio: true }] },
-            { id: uid(), sub: "Forma de pagamento", texto: "O cliente paga via [[forma_atual]] e no aplicativo está [[forma_app]]", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }] },
-          ]},
-          { id: uid(), nome: "Erro de pagamento", subs: [{ id: uid(), sub: "Erro no pagamento", texto: "O cliente está tentando realizar o pagamento da linha e está dando erro", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }] }]},
-          { id: uid(), nome: "Exclusão de cadastro", subs: [{ id: uid(), sub: "Excluir cadastro", texto: "O licenciado esta tentando cadastrar o cliente e esta dando o erro que o cliente ja tem um cadastro com outro licenciado, o mesmo não tem cadastro em nenhuma conexão", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }, { id: uid(), label: "CPF do cliente", obrigatorio: true }] }]},
-          { id: uid(), nome: "Falha na ativação", subs: [{ id: uid(), sub: "Data ativo", texto: "O cliente realizou a ativação da linha na contel mas no backoffice está sem data ativo e no aplicativo está inativo", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }] }]},
-          { id: uid(), nome: "Instabilidade no iGreen Club", subs: [
-            { id: uid(), sub: "Acesso ao desconto", texto: "O cliente esta tentando ultilizar o desconto e fica uma tela branca ao clicar no estabelecimento", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }] },
-            { id: uid(), sub: "Senha do cliente", texto: "O cliente esta ultilizando a senha e o email correto mas no aplicativo esta dando erro ao entrar", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }, { id: uid(), label: "Senha do cliente", obrigatorio: true }, { id: uid(), label: "Email do cliente", obrigatorio: true }] },
-          ]},
-          { id: uid(), nome: "Reativação de cadastro", subs: [{ id: uid(), sub: "Data cancelado", texto: "O cliente tinha uma linha cancelada e realizou a reativação na Contel, mas no BackOffice consta data cancelado", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }] }]},
-          { id: uid(), nome: "Troca de titularidade", subs: [{ id: uid(), sub: "Info do cliente", texto: "O cliente realizou uma troca de titularidade na Contel", campos: [{ id: uid(), label: "ID cliente", obrigatorio: true }, { id: uid(), label: "ID licenciado", obrigatorio: true }, { id: uid(), label: "Nome BackOffice", obrigatorio: true }, { id: uid(), label: "CPF BackOffice", obrigatorio: true }, { id: uid(), label: "Nome Contel", obrigatorio: true }, { id: uid(), label: "CPF Contel", obrigatorio: true }] }]},
-        ]
-      };
-      salvarScripts();
-    }
-    renderizarEditor();
-  });
-}
-
-function salvarScripts() {
-  db.collection('scripts').doc(SETOR).set(scriptsData).then(() => toast('Salvo'));
-}
-function toast(msg) {
-  const el = document.getElementById('saving-toast');
-  el.textContent = '✓ ' + msg; el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 2000);
-}
-
-function renderizarAtendentesEditor() {
-  const lista = document.getElementById('atendentes-lista'); if (!lista) return;
-  lista.innerHTML = '';
-  (scriptsData.atendentes || []).forEach((nome, i) => {
-    const tag = document.createElement('div');
-    tag.className = 'atendente-tag';
-    tag.innerHTML = `<span>${esc(nome)}</span><button onclick="removerAtendente(${i})" title="Remover">✕</button>`;
-    lista.appendChild(tag);
-  });
-}
-function adicionarAtendente() {
-  const input = document.getElementById('novo-atendente-input');
-  const nome = input.value.trim(); if (!nome) return;
-  if (!scriptsData.atendentes) scriptsData.atendentes = [];
-  scriptsData.atendentes.push(nome); input.value = ''; salvarScripts();
-}
-function removerAtendente(i) {
-  if (!confirm('Remover atendente?')) return;
-  scriptsData.atendentes.splice(i, 1); salvarScripts();
-}
-
-function renderizarEditor() {
-  renderizarAtendentesEditor();
-  const lista = document.getElementById('editor-demandas-lista'); if (!lista) return;
-  lista.innerHTML = '';
-  (scriptsData.demandas || []).forEach((demanda) => {
-    const card = document.createElement('div');
-    card.className = 'editor-demanda-card';
-    card.id = 'demanda-card-' + demanda.id;
-    let subsHTML = '';
-    (demanda.subs || []).forEach((sub) => {
-      const camposHTML = (sub.campos || []).map((c) => `
-        <div class="campo-item">
-          <input type="text" value="${esc(c.label)}" placeholder="Label do campo" onchange="editarCampo('${demanda.id}','${sub.id}','${c.id}','label',this.value)" />
-          <select class="campo-tipo" onchange="editarCampo('${demanda.id}','${sub.id}','${c.id}','obrigatorio',this.value==='true')">
-            <option value="true" ${c.obrigatorio ? 'selected' : ''}>Obrigatório</option>
-            <option value="false" ${!c.obrigatorio ? 'selected' : ''}>Opcional</option>
-          </select>
-          <button class="btn-icon danger" onclick="removerCampo('${demanda.id}','${sub.id}','${c.id}')">✕</button>
-        </div>`).join('');
-      subsHTML += `
-        <div class="editor-sub-card" id="sub-card-${sub.id}">
-          <div class="editor-sub-nome">
-            <input class="editor-input" style="font-weight:600;font-size:13px;margin:0;" value="${esc(sub.sub)}" placeholder="Nome do subtipo" onchange="editarSub('${demanda.id}','${sub.id}','sub',this.value)" />
-            <button class="btn-icon danger" onclick="removerSub('${demanda.id}','${sub.id}')">Remover subtipo</button>
-          </div>
-          <div class="partes-hint">
-            <b>Dica:</b> Use <b>[[campo_inline]]</b> no texto para criar campos preenchíveis inline.<br>
-            Ex: "O cliente tem portabilidade <b>[[status]]</b> e no app está <b>[[app_status]]</b>"
-          </div>
-          <p class="hint">Texto do chamado:</p>
-          <textarea class="editor-textarea" placeholder="Texto do script..." onchange="editarSub('${demanda.id}','${sub.id}','texto',this.value)">${esc(sub.texto || '')}</textarea>
-          <div class="campos-label">Campos adicionais</div>
-          <div class="campos-lista" id="campos-${sub.id}">${camposHTML}</div>
-          <button class="btn-add-sub" onclick="adicionarCampo('${demanda.id}','${sub.id}')">+ Adicionar campo</button>
-        </div>`;
-    });
-    card.innerHTML = `
-      <div class="editor-demanda-header" onclick="toggleEditorCard('${demanda.id}')">
-        <div class="editor-demanda-nome">
-          <input class="editor-input" style="background:transparent;border:none;font-weight:600;font-size:14px;padding:0;cursor:text;"
-            value="${esc(demanda.nome)}" placeholder="Nome da demanda" 
-            onclick="event.stopPropagation()"
-            onchange="editarDemanda('${demanda.id}','nome',this.value)" />
-        </div>
-        <select class="campo-tipo" style="font-size:11px;padding:3px 8px;" onclick="event.stopPropagation()" onchange="editarDemanda('${demanda.id}','tipo',this.value)">
-            <option value="ticket" ${!demanda.tipo || demanda.tipo==='ticket' ? 'selected' : ''}>Ticket</option>
-            <option value="clickup" ${demanda.tipo==='clickup' ? 'selected' : ''}>ClickUp</option>
-          </select>
-        <button class="btn-icon danger" onclick="event.stopPropagation(); removerDemanda('${demanda.id}')">Remover</button>
-        <span style="color:var(--text3); font-size:12px;" id="seta-ed-${demanda.id}">▸</span>
-      </div>
-      <div class="editor-demanda-body hidden" id="body-ed-${demanda.id}">
-        ${subsHTML}
-        <button class="btn-add-sub" onclick="adicionarSub('${demanda.id}')">+ Novo subtipo</button>
-      </div>`;
-    lista.appendChild(card);
-  });
-
-  cardsAbertos.forEach(id => {
-    const body = document.getElementById('body-ed-' + id);
-    const seta = document.getElementById('seta-ed-' + id);
-    if (body) { body.classList.remove('hidden'); seta.textContent = '▾'; }
-  });
-}
-
-function toggleEditorCard(id) {
-  const body = document.getElementById('body-ed-' + id);
-  const seta = document.getElementById('seta-ed-' + id);
-  const hidden = body.classList.toggle('hidden');
-  seta.textContent = hidden ? '▸' : '▾';
-  if (hidden) cardsAbertos.delete(id);
-  else cardsAbertos.add(id);
-}
-
-function adicionarDemanda() {
-  if (!scriptsData.demandas) scriptsData.demandas = [];
-  scriptsData.demandas.push({ id: uid(), nome: '', tipo: 'ticket', subs: [{ id: uid(), sub: 'Novo subtipo', texto: '', campos: [{ id: uid(), label: 'ID cliente', obrigatorio: true }, { id: uid(), label: 'ID licenciado', obrigatorio: true }] }] });
-  salvarScripts();
-}
-function removerDemanda(did) {
-  if (!confirm('Remover esta demanda e todos os seus subtipos?')) return;
-  scriptsData.demandas = scriptsData.demandas.filter(d => d.id !== did); salvarScripts();
-}
-function editarDemanda(did, campo, valor) {
-  const d = scriptsData.demandas.find(d => d.id === did);
-  if (d) { d[campo] = valor; salvarScripts(); }
-}
-function adicionarSub(did) {
-  const d = scriptsData.demandas.find(d => d.id === did);
-  if (d) { d.subs.push({ id: uid(), sub: 'Novo subtipo', texto: '', campos: [{ id: uid(), label: 'ID cliente', obrigatorio: true }, { id: uid(), label: 'ID licenciado', obrigatorio: true }] }); salvarScripts(); }
-}
-function removerSub(did, sid) {
-  if (!confirm('Remover este subtipo?')) return;
-  const d = scriptsData.demandas.find(d => d.id === did);
-  if (d) { d.subs = d.subs.filter(s => s.id !== sid); salvarScripts(); }
-}
-function editarSub(did, sid, campo, valor) {
-  const d = scriptsData.demandas.find(d => d.id === did);
-  if (d) { const s = d.subs.find(s => s.id === sid); if (s) { s[campo] = valor; salvarScripts(); } }
-}
-function adicionarCampo(did, sid) {
-  const d = scriptsData.demandas.find(d => d.id === did);
-  if (d) { const s = d.subs.find(s => s.id === sid); if (s) { if (!s.campos) s.campos = []; s.campos.push({ id: uid(), label: 'Novo campo', obrigatorio: false }); salvarScripts(); } }
-}
-function removerCampo(did, sid, cid) {
-  const d = scriptsData.demandas.find(d => d.id === did);
-  if (d) { const s = d.subs.find(s => s.id === sid); if (s) { s.campos = s.campos.filter(c => c.id !== cid); salvarScripts(); } }
-}
-function editarCampo(did, sid, cid, campo, valor) {
-  const d = scriptsData.demandas.find(d => d.id === did);
-  if (d) { const s = d.subs.find(s => s.id === sid); if (s) { const c = s.campos.find(c => c.id === cid); if (c) { c[campo] = valor; salvarScripts(); } } }
-}
-
-function atualizarStats() {
-  const hoje = new Date(), dHoje = hoje.toLocaleDateString('pt-BR');
-  const inicioSemana = new Date(hoje); inicioSemana.setDate(hoje.getDate() - hoje.getDay());
-  const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-  const parsarData = str => { if (!str) return null; const [date,time] = str.split(', '); const [d,m,y] = date.split('/'); return new Date(`${y}-${m}-${d}T${time||'00:00:00'}`); };
-  const filtrados = chamados.filter(c => c.setor === SETOR);
-  document.getElementById('stat-total').textContent  = filtrados.length;
-  document.getElementById('stat-hoje').textContent   = filtrados.filter(c => c.data && c.data.startsWith(dHoje)).length;
-  document.getElementById('stat-semana').textContent = filtrados.filter(c => { const d=parsarData(c.data); return d&&d>=inicioSemana; }).length;
-  document.getElementById('stat-mes').textContent    = filtrados.filter(c => { const d=parsarData(c.data); return d&&d>=inicioMes; }).length;
+function parsarData(str) {
+  if (!str) return null;
+  const [date, time] = str.split(', '); const [d, m, y] = date.split('/');
+  return new Date(`${y}-${m}-${d}T${time||'00:00:00'}`);
 }
 
 function tempoRelativo(str) {
   if (!str) return '';
-  const [date,time] = str.split(', '); const [d,m,y] = date.split('/');
-  const data = new Date(`${y}-${m}-${d}T${time||'00:00:00'}`);
+  const data = parsarData(str); if (!data) return str;
   const diff = Math.floor((new Date()-data)/1000);
   if (diff<60) return 'agora mesmo';
   if (diff<3600) return `há ${Math.floor(diff/60)} min`;
@@ -504,10 +368,24 @@ function tempoRelativo(str) {
   return str;
 }
 
+function esc(str) { return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ── CHAMADOS ──────────────────────────────────────────────────────────────────
+function atualizarStats() {
+  const hoje = new Date(), dHoje = hoje.toLocaleDateString('pt-BR');
+  const inicioSemana = new Date(hoje); inicioSemana.setDate(hoje.getDate()-hoje.getDay());
+  const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+  const dados = chamados.filter(c => c.setor===SETOR && (c.tipo==='clickup'||!c.tipo));
+  document.getElementById('stat-total').textContent  = dados.length;
+  document.getElementById('stat-hoje').textContent   = dados.filter(c=>c.data&&c.data.startsWith(dHoje)).length;
+  document.getElementById('stat-semana').textContent = dados.filter(c=>{const d=parsarData(c.data);return d&&d>=inicioSemana;}).length;
+  document.getElementById('stat-mes').textContent    = dados.filter(c=>{const d=parsarData(c.data);return d&&d>=inicioMes;}).length;
+}
+
 function renderizarAtendentes() {
   const lista = document.getElementById('lista-colaboradores'); if (!lista) return;
   lista.innerHTML = '';
-  const base = chamados.filter(c=>c.setor===SETOR);
+  const base = chamados.filter(c=>c.setor===SETOR&&(c.tipo==='clickup'||!c.tipo));
   [...new Set(base.map(c=>c.atendente))].forEach(nome => {
     const qtd = base.filter(c=>c.atendente===nome).length;
     const btn = document.createElement('button');
@@ -520,20 +398,19 @@ function renderizarAtendentes() {
 
 function filtrarData(periodo, btn) {
   filtroData = periodo;
-  document.querySelectorAll('.chip-data').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+  document.querySelectorAll('#tela-chamados .chip-data').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
   renderizarChamados();
 }
 function ordenar(valor) { ordemAtual = valor; renderizarChamados(); }
 
 function renderizarChamados() {
-  const lista = document.getElementById('lista-chamados'), vazio = document.getElementById('vazio'), contador = document.getElementById('contador');
+  const lista = document.getElementById('lista-chamados'), vazio = document.getElementById('vazio-chamados'), contador = document.getElementById('contador-chamados');
   if (!lista) return;
   const hoje = new Date(), dHoje = hoje.toLocaleDateString('pt-BR');
   const inicioSemana = new Date(hoje); inicioSemana.setDate(hoje.getDate()-hoje.getDay());
   const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-  const parsarData = str => { if (!str) return null; const [date,time]=str.split(', '); const [d,m,y]=date.split('/'); return new Date(`${y}-${m}-${d}T${time||'00:00:00'}`); };
-  const busca = (document.getElementById('busca-input')?.value||'').toLowerCase().trim();
-  let filtrados = chamados.filter(c => c.setor === SETOR);
+  const busca = (document.getElementById('busca-chamados')?.value||'').toLowerCase().trim();
+  let filtrados = chamados.filter(c => c.setor===SETOR && (c.tipo==='clickup'||!c.tipo));
   if (filtroAtendente) filtrados = filtrados.filter(c=>c.atendente===filtroAtendente);
   if (filtroData==='hoje')   filtrados = filtrados.filter(c=>c.data&&c.data.startsWith(dHoje));
   if (filtroData==='semana') filtrados = filtrados.filter(c=>{const d=parsarData(c.data);return d&&d>=inicioSemana;});
@@ -550,29 +427,20 @@ function renderizarChamados() {
   if (!filtrados.length) { vazio.classList.remove('hidden'); return; }
   vazio.classList.add('hidden');
   filtrados.forEach(c => {
-    const div = document.createElement('div');
-    div.className = 'chamado-card';
+    const div = document.createElement('div'); div.className = 'chamado-card';
     div.innerHTML = `
-      <div class="chamado-top" onclick="toggleCard('${c.id}')" style="cursor:pointer;">
+      <div class="chamado-top" onclick="toggleCard('c-${c.id}')" style="cursor:pointer;">
         <div class="chamado-info">
-          <div class="chamado-titulo">
-            ${esc(c.demanda||'Chamado')}
-            <span class="badge-id">#${c.id.slice(-6)}</span>
-            <span class="badge-setor badge-${c.setor||'expansao'}">${c.setor||'expansao'}</span>
-          </div>
-          <div class="chamado-meta">
-            <span>${esc(c.atendente||'')}</span>
-            <span>·</span><span>${esc(c.subtipo||'')}</span>
-            <span>·</span><span>${tempoRelativo(c.data)}</span>
-          </div>
+          <div class="chamado-titulo">${esc(c.demanda||'Chamado')}<span class="badge-setor badge-telecom">telecom</span></div>
+          <div class="chamado-meta"><span>${esc(c.atendente||'')}</span><span>·</span><span>${esc(c.subtipo||'')}</span><span>·</span><span>${tempoRelativo(c.data)}</span></div>
         </div>
-        <span class="card-seta" id="seta-${c.id}">▸</span>
+        <span class="card-seta" id="seta-c-${c.id}">▸</span>
       </div>
-      <div class="chamado-corpo hidden" id="corpo-${c.id}">
+      <div class="chamado-corpo hidden" id="corpo-c-${c.id}">
         <pre class="chamado-texto">${esc(c.texto||'')}</pre>
         ${c.observacao ? `<div class="chamado-obs"><div class="chamado-obs-label">Observação</div>${esc(c.observacao)}</div>` : ''}
         <div class="chamado-actions">
-          <button class="btn-copiar-chamado" id="btn-copiar-${c.id}" onclick="copiarChamado('${c.id}')">Copiar texto</button>
+          <button class="btn-copiar-chamado" id="btn-copiar-c-${c.id}" onclick="copiarChamado('${c.id}')">Copiar texto</button>
           <button class="btn-obs" onclick="abrirModal('${c.id}')">Observação</button>
           <button class="btn-excluir" onclick="excluir('${c.id}')">Excluir</button>
         </div>
@@ -581,6 +449,86 @@ function renderizarChamados() {
   });
 }
 
+// ── TICKETS ───────────────────────────────────────────────────────────────────
+function atualizarStatsTicket() {
+  const hoje = new Date(), dHoje = hoje.toLocaleDateString('pt-BR');
+  const inicioSemana = new Date(hoje); inicioSemana.setDate(hoje.getDate()-hoje.getDay());
+  const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+  const dados = chamados.filter(c => c.setor===SETOR && c.tipo==='ticket');
+  document.getElementById('stat-total-ticket').textContent  = dados.length;
+  document.getElementById('stat-hoje-ticket').textContent   = dados.filter(c=>c.data&&c.data.startsWith(dHoje)).length;
+  document.getElementById('stat-semana-ticket').textContent = dados.filter(c=>{const d=parsarData(c.data);return d&&d>=inicioSemana;}).length;
+  document.getElementById('stat-mes-ticket').textContent    = dados.filter(c=>{const d=parsarData(c.data);return d&&d>=inicioMes;}).length;
+}
+
+function renderizarAtendentesTicket() {
+  const lista = document.getElementById('lista-colaboradores-ticket'); if (!lista) return;
+  lista.innerHTML = '';
+  const base = chamados.filter(c=>c.setor===SETOR&&c.tipo==='ticket');
+  [...new Set(base.map(c=>c.atendente))].forEach(nome => {
+    const qtd = base.filter(c=>c.atendente===nome).length;
+    const btn = document.createElement('button');
+    btn.className = filtroAtendendeTicket===nome ? 'chip active' : 'chip';
+    btn.textContent = `${nome} (${qtd})`;
+    btn.onclick = () => { filtroAtendendeTicket = filtroAtendendeTicket===nome ? null : nome; renderizarTickets(); renderizarAtendentesTicket(); };
+    lista.appendChild(btn);
+  });
+}
+
+function filtrarDataTicket(periodo, btn) {
+  filtroDataTicket = periodo;
+  document.querySelectorAll('#tela-tickets .chip-data').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+  renderizarTickets();
+}
+function ordenarTicket(valor) { ordemTicket = valor; renderizarTickets(); }
+
+function renderizarTickets() {
+  const lista = document.getElementById('lista-tickets'), vazio = document.getElementById('vazio-tickets'), contador = document.getElementById('contador-tickets');
+  if (!lista) return;
+  const hoje = new Date(), dHoje = hoje.toLocaleDateString('pt-BR');
+  const inicioSemana = new Date(hoje); inicioSemana.setDate(hoje.getDate()-hoje.getDay());
+  const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+  const busca = (document.getElementById('busca-tickets')?.value||'').toLowerCase().trim();
+  let filtrados = chamados.filter(c => c.setor===SETOR && c.tipo==='ticket');
+  if (filtroAtendendeTicket) filtrados = filtrados.filter(c=>c.atendente===filtroAtendendeTicket);
+  if (filtroDataTicket==='hoje')   filtrados = filtrados.filter(c=>c.data&&c.data.startsWith(dHoje));
+  if (filtroDataTicket==='semana') filtrados = filtrados.filter(c=>{const d=parsarData(c.data);return d&&d>=inicioSemana;});
+  if (filtroDataTicket==='mes')    filtrados = filtrados.filter(c=>{const d=parsarData(c.data);return d&&d>=inicioMes;});
+  if (busca) filtrados = filtrados.filter(c=>(c.atendente||'').toLowerCase().includes(busca)||(c.demanda||'').toLowerCase().includes(busca)||(c.texto||'').toLowerCase().includes(busca));
+  filtrados.sort((a,b) => {
+    if (ordemTicket==='data_desc') return (parsarData(b.data)||0)-(parsarData(a.data)||0);
+    if (ordemTicket==='data_asc')  return (parsarData(a.data)||0)-(parsarData(b.data)||0);
+    if (ordemTicket==='atendente') return (a.atendente||'').localeCompare(b.atendente||'');
+    return 0;
+  });
+  contador.textContent = `${filtrados.length} ticket${filtrados.length!==1?'s':''}`;
+  lista.innerHTML = '';
+  if (!filtrados.length) { vazio.classList.remove('hidden'); return; }
+  vazio.classList.add('hidden');
+  filtrados.forEach(c => {
+    const div = document.createElement('div'); div.className = 'chamado-card';
+    div.innerHTML = `
+      <div class="chamado-top" onclick="toggleCard('t-${c.id}')" style="cursor:pointer;">
+        <div class="chamado-info">
+          <div class="chamado-titulo">${esc(c.demanda||'Ticket')}<span class="badge-setor badge-telecom">telecom</span></div>
+          <div class="chamado-meta"><span>${esc(c.atendente||'')}</span><span>·</span><span>${esc(c.subtipo||'')}</span><span>·</span><span>${tempoRelativo(c.data)}</span></div>
+        </div>
+        <span class="card-seta" id="seta-t-${c.id}">▸</span>
+      </div>
+      <div class="chamado-corpo hidden" id="corpo-t-${c.id}">
+        <pre class="chamado-texto">${esc(c.texto||'')}</pre>
+        ${c.observacao ? `<div class="chamado-obs"><div class="chamado-obs-label">Observação</div>${esc(c.observacao)}</div>` : ''}
+        <div class="chamado-actions">
+          <button class="btn-copiar-chamado" id="btn-copiar-t-${c.id}" onclick="copiarChamado('${c.id}')">Copiar texto</button>
+          <button class="btn-obs" onclick="abrirModal('${c.id}')">Observação</button>
+          <button class="btn-excluir" onclick="excluir('${c.id}')">Excluir</button>
+        </div>
+      </div>`;
+    lista.appendChild(div);
+  });
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
 function toggleCard(id) {
   const corpo = document.getElementById('corpo-'+id), seta = document.getElementById('seta-'+id);
   const aberto = !corpo.classList.contains('hidden');
@@ -589,11 +537,12 @@ function toggleCard(id) {
 
 function copiarChamado(id) {
   const c = chamados.find(c=>c.id===id); if (!c) return;
-  const btn = document.getElementById('btn-copiar-'+id);
+  const btn = document.getElementById('btn-copiar-c-'+id) || document.getElementById('btn-copiar-t-'+id);
   const done = () => { if(btn){btn.textContent='Copiado!';btn.style.borderColor='var(--accent)';btn.style.color='var(--accent)';setTimeout(()=>{btn.textContent='Copiar texto';btn.style.borderColor='';btn.style.color='';},2000);} };
   if (navigator.clipboard&&window.isSecureContext) navigator.clipboard.writeText(c.texto).then(done);
   else { const ta=document.createElement('textarea');ta.value=c.texto;ta.style.cssText='position:fixed;top:-9999px;left:-9999px;opacity:0;';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(ta); }
 }
+
 function abrirModal(id) { modalChamadoId=id; const c=chamados.find(c=>c.id===id); document.getElementById('modal-texto').value=c?.observacao||''; document.getElementById('modal-obs').classList.remove('hidden'); setTimeout(()=>document.getElementById('modal-texto').focus(),50); }
 function fecharModal() { document.getElementById('modal-obs').classList.add('hidden'); modalChamadoId=null; }
 function salvarObservacao() { const obs=document.getElementById('modal-texto').value.trim(); db.collection('chamados').doc(modalChamadoId).update({observacao:obs}); fecharModal(); }
@@ -604,19 +553,18 @@ document.addEventListener('DOMContentLoaded',()=>{ const m=document.getElementBy
 function exportarCSV() {
   const dados = chamados.filter(c=>c.setor===SETOR);
   if (!dados.length) { alert('Nenhum chamado para exportar.'); return; }
-  const cab = ['Data','Setor','Atendente','Demanda','Subtipo','Observação'];
-  const linhas = dados.map(c=>[c.data||'',c.setor||'',c.atendente||'',c.demanda||'',c.subtipo||'',c.observacao||''].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(';'));
+  const cab = ['Tipo','Data','Setor','Atendente','Demanda','Subtipo','Observação'];
+  const linhas = dados.map(c=>[c.tipo||'',c.data||'',c.setor||'',c.atendente||'',c.demanda||'',c.subtipo||'',c.observacao||''].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(';'));
   const csv = [cab.join(';'),...linhas].join('\n');
   const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
   const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`chamados_telecom_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.csv`; a.click();
 }
 
+// ── DASHBOARD ─────────────────────────────────────────────────────────────────
 function filtrarPeriodoDash(periodo, btn) {
   periodoDash = periodo;
-  document.querySelectorAll('#tela-dashboard .chip-data').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const personalizado = document.getElementById('filtro-personalizado');
-  personalizado.style.display = periodo === 'personalizado' ? 'flex' : 'none';
+  document.querySelectorAll('#tela-dashboard .chip-data').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+  document.getElementById('filtro-personalizado').style.display = periodo==='personalizado' ? 'flex' : 'none';
   if (periodo !== 'personalizado') renderizarDashboard();
 }
 
@@ -624,56 +572,211 @@ function renderizarDashboard() {
   const hoje = new Date();
   const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
   const inicioAno = new Date(hoje.getFullYear(), 0, 1);
-  const parsarData = str => { if (!str) return null; const [date,time]=str.split(', '); const [d,m,y]=date.split('/'); return new Date(`${y}-${m}-${d}T${time||'00:00:00'}`); };
-
-  let dados = chamados.filter(c => c.setor === SETOR);
-  if (periodoDash === 'mes') dados = dados.filter(c => { const d=parsarData(c.data); return d&&d>=inicioMes; });
-  if (periodoDash === 'ano') dados = dados.filter(c => { const d=parsarData(c.data); return d&&d>=inicioAno; });
-  if (periodoDash === 'personalizado') {
-    const ini = document.getElementById('data-inicio')?.value;
-    const fim = document.getElementById('data-fim')?.value;
-    if (ini) dados = dados.filter(c => { const d=parsarData(c.data); return d&&d>=new Date(ini); });
-    if (fim) dados = dados.filter(c => { const d=parsarData(c.data); return d&&d<=new Date(fim+'T23:59:59'); });
+  let dados = chamados.filter(c => c.setor===SETOR);
+  if (periodoDash==='mes') dados = dados.filter(c=>{const d=parsarData(c.data);return d&&d>=inicioMes;});
+  if (periodoDash==='ano') dados = dados.filter(c=>{const d=parsarData(c.data);return d&&d>=inicioAno;});
+  if (periodoDash==='personalizado') {
+    const ini=document.getElementById('data-inicio')?.value, fim=document.getElementById('data-fim')?.value;
+    if (ini) dados=dados.filter(c=>{const d=parsarData(c.data);return d&&d>=new Date(ini);});
+    if (fim) dados=dados.filter(c=>{const d=parsarData(c.data);return d&&d<=new Date(fim+'T23:59:59');});
   }
-
   const cores = ['#10B981','#06B6D4','#F59E0B','#EF4444','#8B5CF6','#EC4899','#14B8A6','#F97316','#6366F1','#84CC16'];
-
   const contagemAtendente = {};
-  dados.forEach(c => { contagemAtendente[c.atendente||'N/A'] = (contagemAtendente[c.atendente||'N/A']||0)+1; });
+  dados.forEach(c=>{ contagemAtendente[c.atendente||'N/A']=(contagemAtendente[c.atendente||'N/A']||0)+1; });
   if (grafAtendente) grafAtendente.destroy();
   grafAtendente = new Chart(document.getElementById('grafico-atendente'), {
-    type: 'bar',
-    data: { labels: Object.keys(contagemAtendente), datasets: [{ data: Object.values(contagemAtendente), backgroundColor: cores, borderRadius: 6 }] },
-    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales: { x:{ticks:{color:'#94A3B8'},grid:{display:false}}, y:{ticks:{color:'#94A3B8',stepSize:1},grid:{color:'#1e293b'},beginAtZero:true} } }
+    type:'bar', data:{labels:Object.keys(contagemAtendente),datasets:[{data:Object.values(contagemAtendente),backgroundColor:cores,borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#94A3B8'},grid:{display:false}},y:{ticks:{color:'#94A3B8',stepSize:1},grid:{color:'#1e293b'},beginAtZero:true}}}
   });
-
   const contagemDemanda = {};
-  dados.forEach(c => { contagemDemanda[c.demanda||'N/A'] = (contagemDemanda[c.demanda||'N/A']||0)+1; });
-  const contagemDemandaOrdenado = Object.fromEntries(Object.entries(contagemDemanda).sort((a,b) => b[1]-a[1]));
+  dados.forEach(c=>{ contagemDemanda[c.demanda||'N/A']=(contagemDemanda[c.demanda||'N/A']||0)+1; });
+  const demOrdenado = Object.fromEntries(Object.entries(contagemDemanda).sort((a,b)=>b[1]-a[1]));
   if (grafDemanda) grafDemanda.destroy();
   grafDemanda = new Chart(document.getElementById('grafico-demanda'), {
-    type: 'bar',
-    data: { labels: Object.keys(contagemDemandaOrdenado), datasets: [{ data: Object.values(contagemDemandaOrdenado), backgroundColor: cores, borderColor: '#020617' }] },
-    options: { indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{ticks:{color:'#94A3B8',stepSize:1},grid:{color:'#1e293b'},beginAtZero:true}, y:{ticks:{color:'#94A3B8',font:{size:11}},grid:{display:false}} } }
+    type:'bar', data:{labels:Object.keys(demOrdenado),datasets:[{data:Object.values(demOrdenado),backgroundColor:cores}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#94A3B8',stepSize:1},grid:{color:'#1e293b'},beginAtZero:true},y:{ticks:{color:'#94A3B8',font:{size:11}},grid:{display:false}}}}
   });
-
-  const ranking = document.getElementById('ranking-lista'); ranking.innerHTML = '';
-  const sorted = Object.entries(contagemAtendente).sort((a,b)=>b[1]-a[1]); const max = sorted[0]?.[1]||1;
-  sorted.forEach(([nome,qtd],i) => { ranking.innerHTML += `<div class="ranking-item"><div class="ranking-pos">${i+1}</div><div class="ranking-info"><div class="ranking-nome">${esc(nome)}</div><div class="ranking-bar-wrap"><div class="ranking-bar" style="width:${Math.round(qtd/max*100)}%"></div></div></div><div class="ranking-qtd">${qtd}</div></div>`; });
-
-  const diasMap = {};
-  dados.forEach(c => { if (!c.data) return; const dia = c.data.split(', ')[0]; const at = c.atendente||'N/A'; if (!diasMap[dia]) diasMap[dia]={}; diasMap[dia][at]=(diasMap[dia][at]||0)+1; });
-  const diasOrdenados = Object.keys(diasMap).sort((a,b)=>{const[da,ma,ya]=a.split('/');const[db,mb,yb]=b.split('/');return new Date(`${ya}-${ma}-${da}`)-new Date(`${yb}-${mb}-${db}`);});
-  const atendentesLinha = [...new Set(dados.map(c=>c.atendente||'N/A'))];
+  const ranking=document.getElementById('ranking-lista'); ranking.innerHTML='';
+  const sorted=Object.entries(contagemAtendente).sort((a,b)=>b[1]-a[1]); const max=sorted[0]?.[1]||1;
+  sorted.forEach(([nome,qtd],i)=>{ ranking.innerHTML+=`<div class="ranking-item"><div class="ranking-pos">${i+1}</div><div class="ranking-info"><div class="ranking-nome">${esc(nome)}</div><div class="ranking-bar-wrap"><div class="ranking-bar" style="width:${Math.round(qtd/max*100)}%"></div></div></div><div class="ranking-qtd">${qtd}</div></div>`; });
+  const diasMap={};
+  dados.forEach(c=>{ if(!c.data)return; const dia=c.data.split(', ')[0]; const at=c.atendente||'N/A'; if(!diasMap[dia])diasMap[dia]={}; diasMap[dia][at]=(diasMap[dia][at]||0)+1; });
+  const diasOrdenados=Object.keys(diasMap).sort((a,b)=>{const[da,ma,ya]=a.split('/');const[db,mb,yb]=b.split('/');return new Date(`${ya}-${ma}-${da}`)-new Date(`${yb}-${mb}-${db}`); });
+  const atendentesLinha=[...new Set(dados.map(c=>c.atendente||'N/A'))];
   if (grafLinha) grafLinha.destroy();
   grafLinha = new Chart(document.getElementById('grafico-linha'), {
-    type: 'line',
-    data: { labels: diasOrdenados, datasets: atendentesLinha.map((nome,i)=>({ label:nome, data:diasOrdenados.map(dia=>diasMap[dia]?.[nome]||0), borderColor:cores[i%cores.length], backgroundColor:cores[i%cores.length]+'22', borderWidth:2, pointRadius:4, tension:0.3, fill:false })) },
-    options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom',labels:{color:'#94A3B8',font:{size:11},padding:12,boxWidth:12}}}, scales:{x:{ticks:{color:'#94A3B8',font:{size:10}},grid:{color:'#1e293b'}}, y:{ticks:{color:'#94A3B8',stepSize:1},grid:{color:'#1e293b'},beginAtZero:true}}, elements:{line:{tension:0.4},point:{radius:3,hoverRadius:6}} }
+    type:'line', data:{labels:diasOrdenados,datasets:atendentesLinha.map((nome,i)=>{return{label:nome,data:diasOrdenados.map(dia=>diasMap[dia]?.[nome]||0),borderColor:cores[i%cores.length],backgroundColor:cores[i%cores.length]+'22',borderWidth:2,pointRadius:4,tension:0.3,fill:false};})},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#94A3B8',font:{size:11},padding:12,boxWidth:12}}},scales:{x:{ticks:{color:'#94A3B8',font:{size:10}},grid:{color:'#1e293b'}},y:{ticks:{color:'#94A3B8',stepSize:1},grid:{color:'#1e293b'},beginAtZero:true}},elements:{line:{tension:0.4},point:{radius:3,hoverRadius:6}}}
   });
 }
 
-function esc(str) { return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+// ── HUB ───────────────────────────────────────────────────────────────────────
+function atualizarStatsHub() {
+  const hoje = new Date(), dHoje = hoje.toLocaleDateString('pt-BR');
+  const inicioSemana = new Date(hoje); inicioSemana.setDate(hoje.getDate()-hoje.getDay());
+  const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+  const dados = chamados.filter(c => c.setor===SETOR && c.tipo==='hub');
+  document.getElementById('stat-total-hub').textContent  = dados.length;
+  document.getElementById('stat-hoje-hub').textContent   = dados.filter(c=>c.data&&c.data.startsWith(dHoje)).length;
+  document.getElementById('stat-semana-hub').textContent = dados.filter(c=>{const d=parsarData(c.data);return d&&d>=inicioSemana;}).length;
+  document.getElementById('stat-mes-hub').textContent    = dados.filter(c=>{const d=parsarData(c.data);return d&&d>=inicioMes;}).length;
+}
+
+function renderizarAtendentesHub() {
+  const lista = document.getElementById('lista-colaboradores-hub'); if (!lista) return;
+  lista.innerHTML = '';
+  const base = chamados.filter(c=>c.setor===SETOR&&c.tipo==='hub');
+  [...new Set(base.map(c=>c.atendente))].forEach(nome => {
+    const qtd = base.filter(c=>c.atendente===nome).length;
+    const btn = document.createElement('button');
+    btn.className = filtroAtendendeHub===nome ? 'chip active' : 'chip';
+    btn.textContent = `${nome} (${qtd})`;
+    btn.onclick = () => { filtroAtendendeHub = filtroAtendendeHub===nome ? null : nome; renderizarHub(); renderizarAtendentesHub(); };
+    lista.appendChild(btn);
+  });
+}
+
+function filtrarDataHub(periodo, btn) {
+  filtroDataHub = periodo;
+  document.querySelectorAll('#tela-hub .chip-data').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+  renderizarHub();
+}
+function ordenarHub(valor) { ordemHub = valor; renderizarHub(); }
+
+function renderizarHub() {
+  const lista = document.getElementById('lista-hub'), vazio = document.getElementById('vazio-hub'), contador = document.getElementById('contador-hub');
+  if (!lista) return;
+  const hoje = new Date(), dHoje = hoje.toLocaleDateString('pt-BR');
+  const inicioSemana = new Date(hoje); inicioSemana.setDate(hoje.getDate()-hoje.getDay());
+  const inicioMes = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+  const busca = (document.getElementById('busca-hub')?.value||'').toLowerCase().trim();
+  let filtrados = chamados.filter(c => c.setor===SETOR && c.tipo==='hub');
+  if (filtroAtendendeHub) filtrados = filtrados.filter(c=>c.atendente===filtroAtendendeHub);
+  if (filtroDataHub==='hoje')   filtrados = filtrados.filter(c=>c.data&&c.data.startsWith(dHoje));
+  if (filtroDataHub==='semana') filtrados = filtrados.filter(c=>{const d=parsarData(c.data);return d&&d>=inicioSemana;});
+  if (filtroDataHub==='mes')    filtrados = filtrados.filter(c=>{const d=parsarData(c.data);return d&&d>=inicioMes;});
+  if (busca) filtrados = filtrados.filter(c=>(c.atendente||'').toLowerCase().includes(busca)||(c.demanda||'').toLowerCase().includes(busca)||(c.texto||'').toLowerCase().includes(busca));
+  filtrados.sort((a,b) => {
+    if (ordemHub==='data_desc') return (parsarData(b.data)||0)-(parsarData(a.data)||0);
+    if (ordemHub==='data_asc')  return (parsarData(a.data)||0)-(parsarData(b.data)||0);
+    if (ordemHub==='atendente') return (a.atendente||'').localeCompare(b.atendente||'');
+    return 0;
+  });
+  contador.textContent = `${filtrados.length} atendimento${filtrados.length!==1?'s':''}`;
+  lista.innerHTML = '';
+  if (!filtrados.length) { vazio.classList.remove('hidden'); return; }
+  vazio.classList.add('hidden');
+  filtrados.forEach(c => {
+    const div = document.createElement('div'); div.className = 'chamado-card';
+    div.innerHTML = `
+      <div class="chamado-top" onclick="toggleCard('h-${c.id}')" style="cursor:pointer;">
+        <div class="chamado-info">
+          <div class="chamado-titulo">${esc(c.demanda||'HUB')}<span class="badge-setor badge-telecom">telecom</span></div>
+          <div class="chamado-meta"><span>${esc(c.atendente||'')}</span><span>·</span><span>${esc(c.subtipo||'')}</span><span>·</span><span>${tempoRelativo(c.data)}</span></div>
+        </div>
+        <span class="card-seta" id="seta-h-${c.id}">▸</span>
+      </div>
+      <div class="chamado-corpo hidden" id="corpo-h-${c.id}">
+        <pre class="chamado-texto">${esc(c.texto||'')}</pre>
+        ${c.observacao ? `<div class="chamado-obs"><div class="chamado-obs-label">Observação</div>${esc(c.observacao)}</div>` : ''}
+        <div class="chamado-actions">
+          <button class="btn-copiar-chamado" id="btn-copiar-h-${c.id}" onclick="copiarChamado('${c.id}')">Copiar texto</button>
+          <button class="btn-obs" onclick="abrirModal('${c.id}')">Observação</button>
+          <button class="btn-excluir" onclick="excluir('${c.id}')">Excluir</button>
+        </div>
+      </div>`;
+    lista.appendChild(div);
+  });
+}
+
+
+// ── EDITOR ────────────────────────────────────────────────────────────────────
+function carregarScripts() {
+  db.collection('scripts').doc(SETOR).onSnapshot(doc => {
+    if (doc.exists) { scriptsData = doc.data(); } else { scriptsData = { atendentes: ["Ana Carolina", "Alana Campos", "Daniel Henrique", "Maria Julia", "Renan Gonçalves"], demandas: [] }; salvarScripts(); }
+    renderizarEditor();
+  });
+}
+
+function salvarScripts() { db.collection('scripts').doc(SETOR).set(scriptsData).then(()=>toast('Salvo')); }
+function toast(msg) { const el=document.getElementById('saving-toast'); el.textContent='✓ '+msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),2000); }
+
+function renderizarAtendentesEditor() {
+  const lista=document.getElementById('atendentes-lista'); if(!lista)return;
+  lista.innerHTML='';
+  (scriptsData.atendentes||[]).forEach((nome,i)=>{
+    const tag=document.createElement('div'); tag.className='atendente-tag';
+    tag.innerHTML=`<span>${esc(nome)}</span><button onclick="removerAtendente(${i})" title="Remover">✕</button>`;
+    lista.appendChild(tag);
+  });
+}
+function adicionarAtendente() {
+  const input=document.getElementById('novo-atendente-input'); const nome=input.value.trim(); if(!nome)return;
+  if(!scriptsData.atendentes)scriptsData.atendentes=[];
+  scriptsData.atendentes.push(nome); input.value=''; salvarScripts();
+}
+function removerAtendente(i) { if(!confirm('Remover atendente?'))return; scriptsData.atendentes.splice(i,1); salvarScripts(); }
+
+function renderizarEditor() {
+  renderizarAtendentesEditor();
+  const lista=document.getElementById('editor-demandas-lista'); if(!lista)return;
+  lista.innerHTML='';
+  (scriptsData.demandas||[]).forEach(demanda=>{
+    const card=document.createElement('div'); card.className='editor-demanda-card'; card.id='demanda-card-'+demanda.id;
+    let subsHTML='';
+    (demanda.subs||[]).forEach(sub=>{
+      const camposHTML=(sub.campos||[]).map(c=>`
+        <div class="campo-item">
+          <input type="text" value="${esc(c.label)}" placeholder="Label do campo" onchange="editarCampo('${demanda.id}','${sub.id}','${c.id}','label',this.value)" />
+          <select class="campo-tipo" onchange="editarCampo('${demanda.id}','${sub.id}','${c.id}','obrigatorio',this.value==='true')">
+            <option value="true" ${c.obrigatorio?'selected':''}>Obrigatório</option>
+            <option value="false" ${!c.obrigatorio?'selected':''}>Opcional</option>
+          </select>
+          <button class="btn-icon danger" onclick="removerCampo('${demanda.id}','${sub.id}','${c.id}')">✕</button>
+        </div>`).join('');
+      subsHTML+=`
+        <div class="editor-sub-card" id="sub-card-${sub.id}">
+          <div class="editor-sub-nome">
+            <input class="editor-input" style="font-weight:600;font-size:13px;margin:0;" value="${esc(sub.sub)}" placeholder="Nome do subtipo" onchange="editarSub('${demanda.id}','${sub.id}','sub',this.value)" />
+            <button class="btn-icon danger" onclick="removerSub('${demanda.id}','${sub.id}')">Remover subtipo</button>
+          </div>
+          <div class="partes-hint"><b>Dica:</b> Use <b>[[campo]]</b> no texto para campos inline.</div>
+          <p class="hint">Texto do chamado:</p>
+          <textarea class="editor-textarea" placeholder="Texto do script..." onchange="editarSub('${demanda.id}','${sub.id}','texto',this.value)">${esc(sub.texto||'')}</textarea>
+          <div class="campos-label">Campos adicionais</div>
+          <div class="campos-lista" id="campos-${sub.id}">${camposHTML}</div>
+          <button class="btn-add-sub" onclick="adicionarCampo('${demanda.id}','${sub.id}')">+ Adicionar campo</button>
+        </div>`;
+    });
+    card.innerHTML=`
+      <div class="editor-demanda-header" onclick="toggleEditorCard('${demanda.id}')">
+        <div class="editor-demanda-nome">
+          <input class="editor-input" style="background:transparent;border:none;font-weight:600;font-size:14px;padding:0;cursor:text;" value="${esc(demanda.nome)}" placeholder="Nome da demanda" onclick="event.stopPropagation()" onchange="editarDemanda('${demanda.id}','nome',this.value)" />
+          <select class="campo-tipo" style="font-size:11px;padding:3px 8px;" onclick="event.stopPropagation()" onchange="editarDemanda('${demanda.id}','tipo',this.value)">
+            <option value="ticket" ${!demanda.tipo||demanda.tipo==='ticket'?'selected':''}>Ticket</option>
+            <option value="clickup" ${demanda.tipo==='clickup'?'selected':''}>ClickUp</option>
+            <option value="hub" ${demanda.tipo==='hub'?'selected':''}>HUB</option>
+          </select>
+        </div>
+        <button class="btn-icon danger" onclick="event.stopPropagation();removerDemanda('${demanda.id}')">Remover</button>
+        <span style="color:var(--text3);font-size:12px;" id="seta-ed-${demanda.id}">▸</span>
+      </div>
+      <div class="editor-demanda-body hidden" id="body-ed-${demanda.id}">${subsHTML}<button class="btn-add-sub" onclick="adicionarSub('${demanda.id}')">+ Novo subtipo</button></div>`;
+    lista.appendChild(card);
+  });
+  cardsAbertos.forEach(id=>{ const body=document.getElementById('body-ed-'+id),seta=document.getElementById('seta-ed-'+id); if(body){body.classList.remove('hidden');seta.textContent='▾';} });
+}
+
+function toggleEditorCard(id) { const body=document.getElementById('body-ed-'+id),seta=document.getElementById('seta-ed-'+id); const hidden=body.classList.toggle('hidden'); seta.textContent=hidden?'▸':'▾'; if(hidden)cardsAbertos.delete(id);else cardsAbertos.add(id); }
+function adicionarDemanda() { if(!scriptsData.demandas)scriptsData.demandas=[]; scriptsData.demandas.push({id:uid(),nome:'',tipo:'ticket',subs:[{id:uid(),sub:'Novo subtipo',texto:'',campos:[{id:uid(),label:'ID cliente',obrigatorio:true},{id:uid(),label:'ID licenciado',obrigatorio:true}]}]}); salvarScripts(); }
+function removerDemanda(did) { if(!confirm('Remover esta demanda?'))return; scriptsData.demandas=scriptsData.demandas.filter(d=>d.id!==did); salvarScripts(); }
+function editarDemanda(did,campo,valor) { const d=scriptsData.demandas.find(d=>d.id===did); if(d){d[campo]=valor;salvarScripts();} }
+function adicionarSub(did) { const d=scriptsData.demandas.find(d=>d.id===did); if(d){d.subs.push({id:uid(),sub:'Novo subtipo',texto:'',campos:[{id:uid(),label:'ID cliente',obrigatorio:true},{id:uid(),label:'ID licenciado',obrigatorio:true}]});salvarScripts();} }
+function removerSub(did,sid) { if(!confirm('Remover subtipo?'))return; const d=scriptsData.demandas.find(d=>d.id===did); if(d){d.subs=d.subs.filter(s=>s.id!==sid);salvarScripts();} }
+function editarSub(did,sid,campo,valor) { const d=scriptsData.demandas.find(d=>d.id===did); if(d){const s=d.subs.find(s=>s.id===sid);if(s){s[campo]=valor;salvarScripts();}} }
+function adicionarCampo(did,sid) { const d=scriptsData.demandas.find(d=>d.id===did); if(d){const s=d.subs.find(s=>s.id===sid);if(s){if(!s.campos)s.campos=[];s.campos.push({id:uid(),label:'Novo campo',obrigatorio:false});salvarScripts();}} }
+function removerCampo(did,sid,cid) { const d=scriptsData.demandas.find(d=>d.id===did); if(d){const s=d.subs.find(s=>s.id===sid);if(s){s.campos=s.campos.filter(c=>c.id!==cid);salvarScripts();}} }
+function editarCampo(did,sid,cid,campo,valor) { const d=scriptsData.demandas.find(d=>d.id===did); if(d){const s=d.subs.find(s=>s.id===sid);if(s){const c=s.campos.find(c=>c.id===cid);if(c){c[campo]=valor;salvarScripts();}}} }
 </script>
 </body>
 </html>
