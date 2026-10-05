@@ -19,14 +19,13 @@ let subAtual = null;
 let scriptsCarregados = {};
 
 const emails = {
-  green: 'matheusurias@igreenenergy.com.br',
   telecom: 'anacarolina.araujo@igreenenergy.com.br',
-  expansao: 'mateuskeveny@igreenenergy.com.br'
 };
 
 // TIPO: CLICKUP OU TICKET
 function selecionarTipo(tipo, btn) {
   tipoAtual = tipo;
+  setorAtual = 'telecom';
 
   document.querySelectorAll('#passo-tipo .chip').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
@@ -40,15 +39,12 @@ function selecionarTipo(tipo, btn) {
   document.getElementById('output-box').style.display = 'none';
   document.getElementById('btn-gerar').classList.add('hidden');
 
-  // Mostra setor sempre
-  document.getElementById('passo-setor').classList.remove('hidden');
-
-  // Reset chips de setor
-  document.querySelectorAll('#passo-setor .chip').forEach(b => b.classList.remove('active'));
-  setorAtual = '';
   atendenteAtual = '';
   demandaAtual = null;
   subAtual = null;
+
+  // Seleciona telecom automaticamente e carrega atendentes
+  selecionarSetor('telecom', null);
 }
 
 // SELECIONAR SETOR
@@ -56,7 +52,7 @@ async function selecionarSetor(setor, btn) {
   setorAtual = setor;
 
   document.querySelectorAll('#passo-setor .chip').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+  if (btn) btn.classList.add('active');
 
   // Reset passos seguintes
   document.getElementById('passo-atendente').classList.add('hidden');
@@ -118,6 +114,7 @@ function mostrarDemandas() {
   // Filtra apenas demandas do tipo 'ticket' (ou sem tipo definido = ticket)
     const demandas = (dados.demandas || []).filter(d => {
     if (tipoAtual === 'clickup') return d.tipo === 'clickup';
+    if (tipoAtual === 'hub') return d.tipo === 'hub';
     return !d.tipo || d.tipo === 'ticket';
   });
 
