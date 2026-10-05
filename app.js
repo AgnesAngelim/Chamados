@@ -11,7 +11,7 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 // ESTADO GLOBAL
-let tipoAtual = '';       // 'clickup' ou 'ticket'
+let tipoAtual = '';
 let atendenteAtual = '';
 let setorAtual = '';
 let demandaAtual = null;
@@ -22,7 +22,7 @@ const emails = {
   telecom: 'anacarolina.araujo@igreenenergy.com.br',
 };
 
-// TIPO: CLICKUP OU TICKET
+// TIPO
 function selecionarTipo(tipo, btn) {
   tipoAtual = tipo;
   setorAtual = 'telecom';
@@ -30,7 +30,6 @@ function selecionarTipo(tipo, btn) {
   document.querySelectorAll('#passo-tipo .chip').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 
-  // Reset
   document.getElementById('passo-setor').classList.add('hidden');
   document.getElementById('passo-atendente').classList.add('hidden');
   document.getElementById('passo2').classList.add('hidden');
@@ -39,11 +38,14 @@ function selecionarTipo(tipo, btn) {
   document.getElementById('output-box').style.display = 'none';
   document.getElementById('btn-gerar').classList.add('hidden');
 
+  // Atualiza label do botão conforme tipo
+  const btnGerar = document.getElementById('btn-gerar');
+  btnGerar.textContent = tipo === 'hub' ? 'Copiar script' : 'Gerar chamado';
+
   atendenteAtual = '';
   demandaAtual = null;
   subAtual = null;
 
-  // Seleciona telecom automaticamente e carrega atendentes
   selecionarSetor('telecom', null);
 }
 
@@ -54,16 +56,12 @@ async function selecionarSetor(setor, btn) {
   document.querySelectorAll('#passo-setor .chip').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
 
-  // Reset passos seguintes
   document.getElementById('passo-atendente').classList.add('hidden');
   document.getElementById('passo2').classList.add('hidden');
   document.getElementById('passo3').classList.add('hidden');
   document.getElementById('passo4').classList.add('hidden');
   document.getElementById('output-box').style.display = 'none';
 
-
-
-  // Ticket: carrega scripts e mostra atendentes
   if (!scriptsCarregados[setor]) {
     const listaAt = document.getElementById('atendente-list');
     listaAt.innerHTML = '<span style="color:var(--text3); font-size:13px;">Carregando...</span>';
@@ -98,8 +96,7 @@ async function selecionarSetor(setor, btn) {
   document.getElementById('passo-atendente').classList.remove('hidden');
 }
 
-
-// MOSTRAR DEMANDAS (ticket)
+// MOSTRAR DEMANDAS
 function mostrarDemandas() {
   const lista = document.getElementById('demanda-list');
   lista.innerHTML = '';
@@ -111,8 +108,7 @@ function mostrarDemandas() {
   const dados = scriptsCarregados[setorAtual];
   if (!dados) return;
 
-  // Filtra apenas demandas do tipo 'ticket' (ou sem tipo definido = ticket)
-    const demandas = (dados.demandas || []).filter(d => {
+  const demandas = (dados.demandas || []).filter(d => {
     if (tipoAtual === 'clickup') return d.tipo === 'clickup';
     if (tipoAtual === 'hub') return d.tipo === 'hub';
     return !d.tipo || d.tipo === 'ticket';
@@ -120,7 +116,7 @@ function mostrarDemandas() {
 
   if (!demandas.length) {
     lista.innerHTML = '<span style="color:var(--text3); font-size:13px;">Nenhuma demanda cadastrada para este tipo. Configure no Editor de Scripts.</span>';
-    document.getElementById("passo2").classList.remove("hidden");
+    document.getElementById('passo2').classList.remove('hidden');
     return;
   }
 
@@ -187,43 +183,86 @@ function selecionarSub(s, btn) {
     }
   });
 
-  // Campos dinâmicos
+  // Campos dinâmicos — HUB não mostra campos
   document.getElementById('campos-extras').innerHTML = '';
   const fieldsRow = document.querySelector('.fields-row');
   fieldsRow.innerHTML = '';
 
-  const campos = s.campos || [
-    { id: 'id-cliente', label: 'ID cliente', obrigatorio: true },
-    { id: 'id-licenciado', label: 'ID licenciado', obrigatorio: true }
-  ];
+  if (tipoAtual !== 'hub') {
+    const campos = s.campos || [
+      { id: 'id-cliente', label: 'ID cliente', obrigatorio: true },
+      { id: 'id-licenciado', label: 'ID licenciado', obrigatorio: true }
+    ];
 
-  campos.forEach(campo => {
-    const div = document.createElement('div');
-    div.className = 'field-group';
-    const fieldId = 'campo_' + (campo.id || campo.label.replace(/\s+/g, '_').toLowerCase());
-    div.innerHTML = `
-      <label class="field-label">
-        ${campo.label}
-        ${campo.obrigatorio ? '' : '<span style="color:var(--text3);font-weight:400;"> (opcional)</span>'}
-      </label>
-      <input type="text" class="field-input campo-dinamico"
-        id="${fieldId}"
-        data-label="${campo.label}"
-        data-obrigatorio="${campo.obrigatorio ? 'true' : 'false'}"
-        placeholder="Ex: 123456" />`;
-    fieldsRow.appendChild(div);
-  });
+    campos.forEach(campo => {
+      const div = document.createElement('div');
+      div.className = 'field-group';
+      const fieldId = 'campo_' + (campo.id || campo.label.replace(/\s+/g, '_').toLowerCase());
+      div.innerHTML = `
+        <label class="field-label">
+          ${campo.label}
+          ${campo.obrigatorio ? '' : '<span style="color:var(--text3);font-weight:400;"> (opcional)</span>'}
+        </label>
+        <input type="text" class="field-input campo-dinamico"
+          id="${fieldId}"
+          data-label="${campo.label}"
+          data-obrigatorio="${campo.obrigatorio ? 'true' : 'false'}"
+          placeholder="Ex: 123456" />`;
+      fieldsRow.appendChild(div);
+    });
+  }
 
   document.getElementById('passo4').classList.remove('hidden');
-   document.getElementById('btn-gerar').classList.remove('hidden');
+  document.getElementById('btn-gerar').classList.remove('hidden');
 }
 
-
-// GERAR TEXTO (ticket)
+// GERAR / COPIAR SCRIPT
 function gerarTexto() {
   if (!subAtual) return;
   if (!atendenteAtual) { alert('Selecione o atendente'); return; }
 
+  // HUB: copia direto sem validar campos
+  if (tipoAtual === 'hub') {
+    let modelo = subAtual.texto || '';
+    document.querySelectorAll('.inline-field').forEach(input => {
+      const fieldName = input.id.replace('inline_', '');
+      modelo = modelo.replace(`[[${fieldName}]]`, input.value || `[${fieldName}]`);
+    });
+
+    const texto = modelo;
+
+    // Copia automaticamente
+    function onCopiado() {
+      const btn = document.getElementById('btn-gerar');
+      btn.textContent = 'Copiado!';
+      setTimeout(() => { btn.textContent = 'Copiar script'; }, 2000);
+    }
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(texto).then(onCopiado);
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = texto; ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      try { document.execCommand('copy'); onCopiado(); } catch(e) {}
+      document.body.removeChild(ta);
+    }
+
+    // Salva no Firebase como registro de uso
+    db.collection('chamados').add({
+      tipo: 'hub',
+      setor: setorAtual,
+      atendente: atendenteAtual,
+      demanda: demandaAtual.nome,
+      titulo: demandaAtual.nome,
+      subtipo: subAtual.sub,
+      texto: texto,
+      data: new Date().toLocaleString('pt-BR'),
+    }).catch(err => console.error('Erro ao salvar:', err));
+
+    return;
+  }
+
+  // TICKET / CLICKUP: fluxo normal
   const camposDinamicos = document.querySelectorAll('.campo-dinamico');
   let camposValores = {};
   let valido = true;
@@ -285,7 +324,7 @@ function gerarTexto() {
   document.getElementById('output-box').style.display = 'block';
 }
 
-// COPIAR TEXTO
+// COPIAR TEXTO (ticket/clickup)
 function copiar() {
   const texto = document.getElementById('output-text').textContent;
   const btn = document.getElementById('btn-copy');
